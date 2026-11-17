@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sastrería Elegance - Sistema de Gestión</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display (Serif para el logo) e Inter (Sans para la UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#fdfbf7',
+                            100: '#f8f4ea',
+                            200: '#f2ece0',
+                            300: '#e8decb',
+                            400: '#d7c5a5',
+                        },
+                        gold: {
+                            400: '#d4b88c',
+                            500: '#cbb286',
+                            600: '#b59663',
+                            700: '#947646',
+                        },
+                        navy: {
+                            700: '#274666',
+                            800: '#1d364f',
+                            900: '#132436',
+                        },
+                        brick: {
+                            500: '#b83c33',
+                            600: '#9e2e26',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8f4ea;
+            color: #2b2927;
+            overflow-x: hidden;
+        }
+
+        /* Animación de la aguja y el hilo girando */
+        @keyframes spinOrbit {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes threadDraw {
+            0% {
+                stroke-dashoffset: 360;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -360;
+            }
+        }
+
+        @keyframes needleFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-6px) rotate(3deg);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 6px rgba(203, 178, 134, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 16px rgba(203, 178, 134, 0.85));
+            }
+        }
+
+        .animate-orbit {
+            animation: spinOrbit 4.5s linear infinite;
+            transform-origin: center;
+        }
+
+        .animate-orbit-reverse {
+            animation: spinOrbit 7s linear infinite reverse;
+            transform-origin: center;
+        }
+
+        .animate-thread {
+            stroke-dasharray: 360;
+            animation: threadDraw 3.5s ease-in-out infinite;
+        }
+
+        .animate-needle {
+            animation: needleFloat 2.6s ease-in-out infinite;
+            transform-origin: center;
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .stagger-1 { animation-delay: 0.08s; }
+        .stagger-2 { animation-delay: 0.16s; }
+        .stagger-3 { animation-delay: 0.24s; }
+        .stagger-4 { animation-delay: 0.32s; }
+
+        /* Scrollbar elegante */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f2ece0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbb286;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b59663;
+        }
+
+        /* Efectos suaves para botones */
+        .btn-action {
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-action:hover {
+            transform: translateY(-1px) scale(1.02);
+        }
+        .btn-action:active {
+            transform: translateY(0) scale(0.98);
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-gold-500 selection:text-white">
+
+    <!-- ==========================================
+         1. PANTALLA PRE-LOGIN (SPLASH CON AGUJA Y HILO GIRANDO)
+         ========================================== -->
+    <div id="splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-cream-100 transition-opacity duration-700">
+        <!-- Círculos decorativos de fondo -->
+        <div class="absolute w-96 h-96 rounded-full bg-gold-400/10 blur-3xl pointer-events-none"></div>
+
+        <div class="relative flex flex-col items-center">
+            <!-- Contenedor del Logo Animado: Aguja e Hilo Girando -->
+            <div class="relative w-44 h-44 flex items-center justify-center">
+                <!-- Anillo de hilo exterior girando -->
+                <svg class="w-44 h-44 absolute inset-0 animate-orbit" viewBox="0 0 200 200" fill="none">
+                    <circle cx="100" cy="100" r="82" stroke="#cbb286" stroke-width="1.5" stroke-dasharray="10 8" opacity="0.65" />
+                    <path d="M100 18 C145 18, 182 55, 182 100" stroke="#b59663" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="182" cy="100" r="4" fill="#1d364f" />
+                </svg>
+
+                <!-- Segundo hilo dorado entrelazado en sentido inverso -->
+                <svg class="w-36 h-36 absolute animate-orbit-reverse" viewBox="0 0 200 200" fill="none">
+                    <ellipse cx="100" cy="100" rx="75" ry="42" transform="rotate(-35 100 100)" stroke="#b59663" stroke-width="2.2" class="animate-thread" stroke-linecap="round" />
+                    <ellipse cx="100" cy="100" rx="75" ry="42" transform="rotate(55 100 100)" stroke="#cbb286" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.8" />
+                </svg>
+
+                <!-- Aguja de sastrería e hilo serpenteante central (Idéntico al logo de la imagen) -->
+                <svg class="w-28 h-28 relative z-10 animate-needle" viewBox="0 0 120 120" fill="none">
+                    <!-- Hilo dorado envolviendo la aguja -->
+                    <path d="M36 78 C58 92, 92 65, 76 48 C62 35, 45 55, 68 32 C84 17, 98 28, 86 42" 
+                          stroke="#b59663" stroke-width="2.8" stroke-linecap="round" fill="none" />
+                    <!-- Aguja diagonal azul marino oscuro -->
+                    <path d="M25 96 L88 18 C91 14, 94 15, 91 20 L30 99 Z" fill="#1d364f" />
+                    <!-- Ojo de la aguja -->
+                    <ellipse cx="83" cy="25" rx="1.6" ry="3.8" transform="rotate(39 83 25)" fill="#f8f4ea" />
+                </svg>
+            </div>
+
+            <!-- Nombre de la marca -->
+            <div class="text-center mt-2 animate-fade-up">
+                <h1 class="font-serif text-3xl md:text-4xl font-semibold text-navy-900 tracking-wide">
+                    Sastrería Elegance
+                </h1>
+                <p class="text-xs uppercase tracking-[0.28em] text-gold-700 mt-1.5 font-medium">
+                    Alta Costura &amp; Gestión a Medida
+                </p>
+            </div>
+
+            <!-- Barra de progreso de puntada -->
+            <div class="w-56 h-1.5 bg-cream-300 rounded-full overflow-hidden mt-7 relative">
+                <div id="splash-progress" class="h-full bg-gradient-to-r from-navy-800 via-gold-600 to-navy-800 rounded-full transition-all duration-300" style="width: 10%;"></div>
+            </div>
+            <span id="splash-status" class="text-xs text-stone-500 mt-2.5 italic">Enhebrando el sistema...</span>
+
+            <!-- Botón para saltar animación o replay -->
+            <button onclick="goToLogin()" class="mt-6 text-xs text-stone-500 hover:text-navy-800 underline underline-offset-4 transition">
+                Saltar animación <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         2. PANTALLA DE LOGIN (PRE-LOGIN / ACCESO)
+         ========================================== -->
+    <div id="login-screen" class="fixed inset-0 z-40 hidden items-center justify-center bg-cream-100 p-4 overflow-y-auto">
+        <!-- Decoración sutil de sastrería -->
+        <div class="fixed inset-0 pointer-events-none opacity-30" style="background-image: radial-gradient(#cbb286 0.75px, transparent 0.75px); background-size: 24px 24px;"></div>
+
+        <div class="relative w-full max-w-md bg-cream-50 border border-cream-300 rounded-2xl shadow-xl p-8 md:p-10 animate-fade-up">
+            <!-- Borde interior tipo pespunte de sastrería -->
+            <div class="absolute inset-2.5 border border-dashed border-gold-400/60 rounded-xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col items-center">
+                <!-- Mini logo interactivo con aguja e hilo girando -->
+                <div class="relative w-24 h-24 flex items-center justify-center mb-2 group cursor-pointer" onclick="replaySplash()" title="Haz clic para ver la animación del logo">
+                    <svg class="w-24 h-24 absolute inset-0 animate-orbit opacity-75" viewBox="0 0 160 160" fill="none">
+                        <circle cx="80" cy="80" r="66" stroke="#cbb286" stroke-width="1.5" stroke-dasharray="8 6" />
+                        <path d="M80 14 A66 66 0 0 1 146 80" stroke="#b59663" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                    <svg class="w-16 h-16 relative z-10 animate-needle" viewBox="0 0 120 120" fill="none">
+                        <path d="M36 78 C58 92, 92 65, 76 48 C62 35, 45 55, 68 32 C84 17, 98 28, 86 42" stroke="#b59663" stroke-width="3.2" stroke-linecap="round" fill="none" />
+                        <path d="M25 96 L88 18 C91 14, 94 15, 91 20 L30 99 Z" fill="#1d364f" />
+                        <ellipse cx="83" cy="25" rx="1.6" ry="3.8" transform="rotate(39 83 25)" fill="#fdfbf7" />
+                    </svg>
+                </div>
+
+                <h2 class="font-serif text-2xl font-bold text-navy-900">Sastrería Elegance</h2>
+                <p class="text-xs text-stone-500 mt-1 mb-6 text-center">Inicia sesión para acceder al panel de control y facturación</p>
+
+                <form id="login-form" onsubmit="handleLogin(event)" class="w-full space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1.5">Usuario o Correo</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+                            <input type="text" id="login-user" value="maestro@sastreriaelegance.com" required
+                                class="w-full pl-10 pr-4 py-2.5 bg-white border border-cream-300 rounded-lg text-sm text-stone-800 focus:outline-none focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600">Contraseña</label>
+                            <button type="button" onclick="showToast('Se ha enviado un enlace de recuperación a tu correo.')" class="text-xs text-gold-700 hover:underline">¿Olvidaste tu clave?</button>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></i>
+                            <input type="password" id="login-pass" value="••••••••" required
+                                class="w-full pl-10 pr-4 py-2.5 bg-white border border-cream-300 rounded-lg text-sm text-stone-800 focus:outline-none focus:border-navy-800 focus:ring-2 focus:ring-navy-800/15 transition">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-stone-600 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked class="rounded border-cream-300 text-navy-800 focus:ring-navy-800">
+                            <span>Mantener sesión activa</span>
+                        </label>
+                        <button type="button" onclick="replaySplash()" class="text-navy-700 hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-right"></i> Ver intro
+                        </button>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-3 bg-navy-800 hover:bg-navy-900 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 btn-action mt-2">
+                        <span>Ingresar al Sistema</span>
+                        <i class="fa-solid fa-arrow-right-to-bracket text-sm"></i>
+                    </button>
+                </form>
+
+                <!-- Botón de acceso directo a vistas -->
+                <div class="w-full mt-5 pt-4 border-t border-cream-200 flex items-center justify-between text-xs text-stone-500">
+                    <span>Acceso rápido de prueba:</span>
+                    <div class="flex gap-2">
+                        <button onclick="enterApp('dashboard')" class="px-2.5 py-1 bg-cream-200 hover:bg-gold-400/40 text-stone-700 rounded font-medium transition">
+                            Ir a Inicio
+                        </button>
+                        <button onclick="enterApp('facturas')" class="px-2.5 py-1 bg-gold-500/30 hover:bg-gold-500/50 text-navy-900 rounded font-medium transition">
+                            Ir a Facturas
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         3. APLICACIÓN PRINCIPAL (SIDEBAR + TODAS LAS VISTAS FUNCIONALES)
+         ========================================== -->
+    <div id="app-container" class="hidden min-h-screen flex flex-col md:flex-row bg-cream-100">
+
+        <!-- BARRA SUPERIOR MÓVIL -->
+        <div class="md:hidden flex items-center justify-between bg-cream-200 px-4 py-3 border-b border-cream-300">
+            <div class="flex items-center gap-2">
+                <svg class="w-8 h-8" viewBox="0 0 120 120" fill="none">
+                    <path d="M36 78 C58 92, 92 65, 76 48 C62 35, 45 55, 68 32" stroke="#b59663" stroke-width="4" stroke-linecap="round" />
+                    <path d="M25 96 L88 18 L91 20 L30 99 Z" fill="#1d364f" />
+                </svg>
+                <span class="brand-name-display font-serif font-bold text-lg text-navy-900">Sastrería Elegance</span>
+            </div>
+            <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg bg-cream-100 text-navy-900 border border-cream-300">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- SIDEBAR IZQUIERDO -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-30 w-60 bg-[#f4efe2] border-r border-[#e5dec9] flex flex-col justify-between py-6 px-4 transform -translate-x-full md:translate-x-0 transition-transform duration-300 shrink-0 select-none">
+            <div>
+                <!-- Logo Superior del Sidebar -->
+                <div class="flex flex-col items-center text-center mb-8 cursor-pointer group" onclick="switchView('facturas')" title="Sastrería Elegance">
+                    <div class="relative w-20 h-20 flex items-center justify-center">
+                        <svg class="w-20 h-20 absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-orbit" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" stroke="#cbb286" stroke-width="1.2" stroke-dasharray="6 6" />
+                        </svg>
+                        <svg class="w-16 h-16 transform group-hover:scale-105 transition-transform" viewBox="0 0 120 120" fill="none">
+                            <path d="M32 76 C58 90, 92 60, 74 44 C58 30, 46 52, 70 28 C82 16, 95 25, 82 40" stroke="#b59663" stroke-width="3" stroke-linecap="round" fill="none"/>
+                            <path d="M22 98 L86 16 C89 12, 92 14, 89 18 L27 101 Z" fill="#1d364f"/>
+                            <ellipse cx="81" cy="23" rx="1.4" ry="3.5" transform="rotate(39 81 23)" fill="#f4efe2"/>
+                        </svg>
+                    </div>
+                    <span class="brand-name-display font-serif text-lg leading-tight font-semibold text-stone-800 -mt-1">
+                        Sastrería<br>Elegance
+                    </span>
+                </div>
+
+                <!-- Menú de Navegación 100% Funcional -->
+                <nav class="space-y-1.5">
+                    <button onclick="switchView('dashboard')" id="nav-dashboard"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition">
+                        <i class="fa-solid fa-house w-5 text-center text-stone-700"></i>
+                        <span>Dashboard</span>
+                    </button>
+
+                    <button onclick="switchView('clientes')" id="nav-clientes"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition">
+                        <i class="fa-solid fa-user-group w-5 text-center text-stone-700"></i>
+                        <span>Clientes</span>
+                    </button>
+
+                    <button onclick="switchView('inventario')" id="nav-inventario"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition">
+                        <i class="fa-solid fa-briefcase w-5 text-center text-stone-700"></i>
+                        <span>Inventario</span>
+                    </button>
+
+                    <button onclick="switchView('facturas')" id="nav-facturas"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[#cbb286] text-stone-900 shadow-sm transition">
+                        <i class="fa-solid fa-file-invoice w-5 text-center text-stone-900"></i>
+                        <span id="nav-facturas-label">Facturas (Active)</span>
+                    </button>
+
+                    <button onclick="switchView('reportes')" id="nav-reportes"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition">
+                        <i class="fa-solid fa-chart-line w-5 text-center text-stone-700"></i>
+                        <span>Reportes</span>
+                    </button>
+
+                    <button onclick="switchView('ajustes')" id="nav-ajustes"
+                        class="nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition">
+                        <i class="fa-solid fa-gear w-5 text-center text-stone-700"></i>
+                        <span>Ajustes</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Pie del Sidebar -->
+            <div class="pt-4 border-t border-[#e5dec9] space-y-1.5">
+                <button onclick="replaySplash()" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium text-gold-700 hover:bg-cream-300/50 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i>
+                    <span>Animación Pre-Login</span>
+                </button>
+                <button onclick="goToLogin()" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium text-stone-600 hover:text-brick-600 hover:bg-red-50/60 transition">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ÁREA DE CONTENIDO PRINCIPAL -->
+        <main class="flex-1 p-5 md:p-8 overflow-y-auto">
+
+            <!-- ==========================================
+                 VISTA 1: REGISTRO DE FACTURAS (CON INPUT TYPE="DATE" EN TABLA Y CRUD)
+                 ========================================== -->
+            <section id="view-facturas" class="max-w-6xl mx-auto animate-fade-up">
+                
+                <!-- Encabezado Superior -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-11 h-11" viewBox="0 0 120 120" fill="none">
+                                <path d="M32 76 C58 90, 92 60, 74 44 C58 30, 46 52, 70 28" stroke="#b59663" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+                                <path d="M22 98 L86 16 L89 18 L27 101 Z" fill="#1d364f"/>
+                            </svg>
+                            <span class="brand-name-display font-serif text-[9px] leading-none text-stone-700 font-semibold -mt-1 text-center">Sastrería<br>Elegance</span>
+                        </div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-wide text-stone-900 uppercase">
+                            REGISTRO DE FACTURAS
+                        </h1>
+                    </div>
+
+                    <button onclick="openInvoiceModal()"
+                        class="bg-[#1d3b58] hover:bg-[#152c42] text-white text-xs md:text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md flex items-center justify-center gap-2 btn-action">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>CREAR NUEVA FACTURA</span>
+                    </button>
+                </div>
+
+                <!-- Grid Principal: Tabla a la Izquierda + Widgets a la Derecha -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                    <!-- Columna Izquierda (Buscador + Filtros + Tabla de Facturas) -->
+                    <div class="lg:col-span-9 space-y-3.5">
+
+                        <!-- Barra de Búsqueda -->
+                        <div class="relative flex items-center bg-[#ebe5d5] rounded-lg px-4 py-2.5 border border-[#dfd7c4] focus-within:border-navy-800 focus-within:bg-white transition">
+                            <i class="fa-solid fa-magnifying-glass text-stone-500 text-sm mr-3"></i>
+                            <input type="text" id="search-input" oninput="renderInvoices()"
+                                placeholder="Buscar Facturas por ID, cliente o prenda..."
+                                class="w-full bg-transparent text-sm text-stone-800 placeholder-stone-500 focus:outline-none">
+                            <button onclick="resetFilters()" title="Limpiar todos los filtros" class="text-stone-500 hover:text-stone-800 ml-2 flex items-center gap-1 text-xs font-medium">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+
+                        <!-- Píldoras de Filtro Desplegables + Selector de Fecha <input type="date"> -->
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <!-- Filtro Estatus -->
+                            <div class="relative">
+                                <select id="filter-status" onchange="renderInvoices()"
+                                    class="appearance-none bg-[#eee9dc] hover:bg-[#e5dec9] border border-[#dad1bc] text-stone-700 text-xs font-medium rounded-md pl-3 pr-7 py-1.5 cursor-pointer focus:outline-none">
+                                    <option value="ALL">Buscar Facturas (Todas)</option>
+                                    <option value="Pagado">Estatus: Pagado</option>
+                                    <option value="Pendiente">Estatus: Pendiente</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-stone-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            </div>
+
+                            <!-- Filtro Importes -->
+                            <div class="relative">
+                                <select id="filter-amount" onchange="renderInvoices()"
+                                    class="appearance-none bg-[#eee9dc] hover:bg-[#e5dec9] border border-[#dad1bc] text-stone-700 text-xs font-medium rounded-md pl-7 pr-7 py-1.5 cursor-pointer focus:outline-none">
+                                    <option value="ALL">Importes (Todos)</option>
+                                    <option value="HIGH">Mayor a 1,000.00</option>
+                                    <option value="LOW">Menor o igual a 1,000.00</option>
+                                    <option value="SORT_DESC">Ordenar: Mayor a Menor</option>
+                                    <option value="SORT_ASC">Ordenar: Menor a Mayor</option>
+                                </select>
+                                <i class="fa-solid fa-filter text-[10px] text-stone-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-stone-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            </div>
+
+                            <!-- Filtro por Fecha Exacta con <input type="date"> -->
+                            <div class="flex items-center bg-[#eee9dc] hover:bg-[#e5dec9] border border-[#dad1bc] rounded-md px-2.5 py-1 gap-1.5">
+                                <i class="fa-regular fa-calendar text-[11px] text-stone-600"></i>
+                                <span class="text-[11px] text-stone-600 font-medium">Fecha:</span>
+                                <input type="date" id="filter-date" onchange="renderInvoices()"
+                                    class="bg-transparent text-xs text-stone-800 font-medium focus:outline-none cursor-pointer">
+                            </div>
+
+                            <button onclick="resetFilters()" class="text-xs text-navy-800 hover:underline px-2 py-1 font-medium">
+                                Mostrar todas
+                            </button>
+                        </div>
+
+                        <!-- Tarjeta de la Tabla de Facturas -->
+                        <div class="bg-[#fcfaf5] rounded-xl shadow-sm border border-[#e6dfd0] overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-[#eee8d8] text-stone-800 text-xs font-bold border-b border-[#e0d8c3]">
+                                            <th class="py-3 px-4 cursor-pointer hover:text-navy-800" onclick="toggleSortId()">
+                                                ID <i class="fa-solid fa-caret-down ml-1 text-[10px]"></i>
+                                            </th>
+                                            <th class="py-3 px-4">Cliente</th>
+                                            <th class="py-3 px-4">Fecha (Calendario)</th>
+                                            <th class="py-3 px-4">Estatus</th>
+                                            <th class="py-3 px-4">Total</th>
+                                            <th class="py-3 px-4 text-center">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoices-tbody" class="divide-y divide-[#ebe4d4] text-sm">
+                                        <!-- Se llena dinámicamente con JS con <input type="date"> integrado en cada fila -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha (Resumen Mensual + Clientes Recientes) -->
+                    <div class="lg:col-span-3 space-y-4">
+
+                        <!-- Card 1: Resumen Mensual -->
+                        <div class="bg-[#fcfaf5] rounded-xl p-4 shadow-sm border border-[#e6dfd0]">
+                            <h3 class="text-sm font-bold text-stone-800 mb-3 border-b border-[#ede6d6] pb-2">
+                                Resumen Mensual
+                            </h3>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between items-center text-stone-600">
+                                    <span>Facturas este mes</span>
+                                    <span id="summary-count" class="font-bold text-stone-900">3</span>
+                                </div>
+                                <div class="flex justify-between items-center text-stone-600">
+                                    <span>Pendiente Total</span>
+                                    <span id="summary-pending-count" class="font-bold text-amber-700">1</span>
+                                </div>
+                                <div class="flex justify-between items-center text-stone-700 pt-1">
+                                    <span>Total Pagado</span>
+                                    <span id="summary-paid" class="font-bold text-emerald-800">Q2,340.00</span>
+                                </div>
+                                <div class="flex justify-between items-center text-stone-700 border-t border-[#ede6d6] pt-2">
+                                    <span class="font-medium">Total General</span>
+                                    <span id="summary-total" class="font-bold text-navy-900">Q3,230.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Clientes Recientes -->
+                        <div class="bg-[#fcfaf5] rounded-xl p-4 shadow-sm border border-[#e6dfd0]">
+                            <div class="flex items-center justify-between mb-3 border-b border-[#ede6d6] pb-2">
+                                <h3 class="text-sm font-bold text-stone-800">Clientes Recientes</h3>
+                                <button onclick="switchView('clientes')" class="text-[11px] text-navy-800 hover:underline font-medium">Ver todos</button>
+                            </div>
+                            <div id="recent-clients-list" class="space-y-3">
+                                <!-- Se sincroniza dinámicamente -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VISTA 2: DASHBOARD (INICIO CON MÉTRICAS Y ÓRDENES EN TALLER)
+                 ========================================== -->
+            <section id="view-dashboard" class="hidden max-w-6xl mx-auto animate-fade-up">
+                <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-[#2c4c6e] rounded-2xl p-6 md:p-8 text-white shadow-lg mb-6 relative overflow-hidden">
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <span class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-gold-400 font-semibold mb-1">
+                                <i class="fa-solid fa-scissors"></i> Panel Principal de Alta Costura
+                            </span>
+                            <h2 class="font-serif text-2xl md:text-3xl font-bold">Bienvenido a <span class="brand-name-display">Sastrería Elegance</span></h2>
+                            <p class="text-xs md:text-sm text-stone-200 mt-1 max-w-xl">
+                                Resumen ejecutivo en tiempo real conectado con tus facturas, clientes, medidas e inventario del taller.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-2.5">
+                            <button onclick="switchView('facturas'); openInvoiceModal();" class="px-4 py-2.5 bg-gold-500 hover:bg-gold-400 text-stone-900 font-semibold text-xs rounded-lg shadow transition btn-action">
+                                <i class="fa-solid fa-plus mr-1.5"></i> Nueva Factura
+                            </button>
+                            <button onclick="switchView('clientes'); openClientModal();" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/25 font-semibold text-xs rounded-lg transition btn-action">
+                                <i class="fa-solid fa-user-plus mr-1.5"></i> Nuevo Cliente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjetas KPI Conectadas a los Datos Reales -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div onclick="switchView('facturas')" class="cursor-pointer bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm hover:border-gold-500 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-stone-500 uppercase">Ingresos Cobrados</span>
+                            <span class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                <i class="fa-solid fa-coins"></i>
+                            </span>
+                        </div>
+                        <p id="dash-paid" class="text-2xl font-bold text-stone-900 mt-2">Q2,340.00</p>
+                        <span class="text-[11px] text-emerald-700 font-medium">Facturas pagadas en caja</span>
+                    </div>
+
+                    <div onclick="switchView('facturas')" class="cursor-pointer bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm hover:border-gold-500 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-stone-500 uppercase">Por Cobrar (Pendiente)</span>
+                            <span class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                                <i class="fa-solid fa-clock"></i>
+                            </span>
+                        </div>
+                        <p id="dash-pending" class="text-2xl font-bold text-stone-900 mt-2">Q890.00</p>
+                        <span id="dash-pending-sub" class="text-[11px] text-amber-700 font-medium">1 factura pendiente</span>
+                    </div>
+
+                    <div onclick="switchView('clientes')" class="cursor-pointer bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm hover:border-gold-500 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-stone-500 uppercase">Clientes con Medidas</span>
+                            <span class="w-9 h-9 rounded-lg bg-navy-800/10 text-navy-800 flex items-center justify-center">
+                                <i class="fa-solid fa-ruler-combined"></i>
+                            </span>
+                        </div>
+                        <p id="dash-clients-count" class="text-2xl font-bold text-stone-900 mt-2">4 Clientes</p>
+                        <span class="text-[11px] text-stone-500">Fichas de sastrería activas</span>
+                    </div>
+
+                    <div onclick="switchView('inventario')" class="cursor-pointer bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm hover:border-gold-500 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-stone-500 uppercase">Artículos en Inventario</span>
+                            <span class="w-9 h-9 rounded-lg bg-gold-500/25 text-gold-700 flex items-center justify-center">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </span>
+                        </div>
+                        <p id="dash-inventory-count" class="text-2xl font-bold text-stone-900 mt-2">4 Lotes</p>
+                        <span id="dash-low-stock" class="text-[11px] text-gold-700 font-medium">Telas, hilos y trajes</span>
+                    </div>
+                </div>
+
+                <!-- Fila Inferior del Dashboard: Órdenes de Confección Interactivas + Progreso de Ventas -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-[#fcfaf5] rounded-xl p-5 border border-[#e6dfd0] shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-stone-800 text-base">Órdenes de Sastrería y Estado de Confección</h3>
+                                <p class="text-xs text-stone-500">Cambia la etapa del taller o haz clic en la fecha para reprogramar la entrega</p>
+                            </div>
+                            <button onclick="switchView('facturas')" class="text-xs text-navy-800 font-semibold hover:underline">
+                                Ver Facturas <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div id="dash-orders-list" class="space-y-3">
+                            <!-- Se llena dinámicamente con JS -->
+                        </div>
+                    </div>
+
+                    <!-- Progreso Mensual y Accesos Rápidos -->
+                    <div class="bg-[#fcfaf5] rounded-xl p-5 border border-[#e6dfd0] shadow-sm flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="font-bold text-stone-800 text-base mb-1">Meta de Facturación Mensual</h3>
+                            <p class="text-xs text-stone-500 mb-4">Progreso actual de ingresos cobrados vs meta del taller</p>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-stone-700">Facturación Cobrada</span>
+                                        <span id="dash-goal-pct" class="text-emerald-700">65%</span>
+                                    </div>
+                                    <div class="w-full h-2.5 bg-cream-200 rounded-full overflow-hidden">
+                                        <div id="dash-goal-bar" class="h-full bg-emerald-600 rounded-full transition-all duration-500" style="width: 65%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-stone-700">Tasa de Liquidación de Facturas</span>
+                                        <span id="dash-paid-rate" class="text-navy-800">72%</span>
+                                    </div>
+                                    <div class="w-full h-2.5 bg-cream-200 rounded-full overflow-hidden">
+                                        <div id="dash-paid-bar" class="h-full bg-navy-800 rounded-full transition-all duration-500" style="width: 72%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-[#e8dfd0] space-y-2">
+                            <p class="text-xs font-bold text-stone-700 uppercase tracking-wider">Módulos Activos</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="switchView('clientes')" class="p-2.5 rounded-lg bg-cream-100 hover:bg-cream-200 border border-cream-300 text-left text-xs font-semibold text-stone-800 transition">
+                                    <i class="fa-solid fa-user-group text-navy-800 mr-1.5"></i> Medidas Clientes
+                                </button>
+                                <button onclick="switchView('inventario')" class="p-2.5 rounded-lg bg-cream-100 hover:bg-cream-200 border border-cream-300 text-left text-xs font-semibold text-stone-800 transition">
+                                    <i class="fa-solid fa-scissors text-gold-700 mr-1.5"></i> Stock de Telas
+                                </button>
+                                <button onclick="switchView('reportes')" class="p-2.5 rounded-lg bg-cream-100 hover:bg-cream-200 border border-cream-300 text-left text-xs font-semibold text-stone-800 transition">
+                                    <i class="fa-solid fa-chart-pie text-emerald-700 mr-1.5"></i> Ver Reportes
+                                </button>
+                                <button onclick="switchView('ajustes')" class="p-2.5 rounded-lg bg-cream-100 hover:bg-cream-200 border border-cream-300 text-left text-xs font-semibold text-stone-800 transition">
+                                    <i class="fa-solid fa-sliders text-stone-600 mr-1.5"></i> Moneda / Ajustes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VISTA 3: CLIENTES Y MEDIDAS DE SASTRERÍA (CRUD COMPLETO)
+                 ========================================== -->
+            <section id="view-clientes" class="hidden max-w-6xl mx-auto animate-fade-up">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-wide text-stone-900 uppercase">
+                            DIRECTORIO DE CLIENTES Y MEDIDAS
+                        </h1>
+                        <p class="text-xs text-stone-600 mt-0.5">Gestiona las fichas técnicas de sastrería (Saco, Cintura, Largo, Hombros) y fechas de registro</p>
+                    </div>
+                    <button onclick="openClientModal()"
+                        class="bg-[#1d3b58] hover:bg-[#152c42] text-white text-xs md:text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md flex items-center justify-center gap-2 btn-action">
+                        <i class="fa-solid fa-user-plus text-xs"></i>
+                        <span>+ NUEVO CLIENTE</span>
+                    </button>
+                </div>
+
+                <!-- Buscador de Clientes -->
+                <div class="mb-4 flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1 flex items-center bg-[#ebe5d5] rounded-lg px-4 py-2.5 border border-[#dfd7c4] focus-within:border-navy-800 focus-within:bg-white transition">
+                        <i class="fa-solid fa-magnifying-glass text-stone-500 text-sm mr-3"></i>
+                        <input type="text" id="client-search-input" oninput="renderClients()"
+                            placeholder="Buscar cliente por nombre, teléfono o talla de saco..."
+                            class="w-full bg-transparent text-sm text-stone-800 placeholder-stone-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Tabla de Clientes y Medidas -->
+                <div class="bg-[#fcfaf5] rounded-xl shadow-sm border border-[#e6dfd0] overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#eee8d8] text-stone-800 text-xs font-bold border-b border-[#e0d8c3]">
+                                    <th class="py-3 px-4">Cliente</th>
+                                    <th class="py-3 px-4">Teléfono</th>
+                                    <th class="py-3 px-4">Medidas (Saco / Cintura / Largo / Hombros)</th>
+                                    <th class="py-3 px-4">Fecha Registro</th>
+                                    <th class="py-3 px-4 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-tbody" class="divide-y divide-[#ebe4d4] text-sm">
+                                <!-- Se llena con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VISTA 4: INVENTARIO DE TELAS, ACCESORIOS Y TRAJES (CRUD COMPLETO)
+                 ========================================== -->
+            <section id="view-inventario" class="hidden max-w-6xl mx-auto animate-fade-up">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-wide text-stone-900 uppercase">
+                            INVENTARIO DE TELAS Y SASTRERÍA
+                        </h1>
+                        <p class="text-xs text-stone-600 mt-0.5">Control de existencias de casimires, linos italianos, hilos de oro, botones y prendas terminadas</p>
+                    </div>
+                    <button onclick="openInventoryModal()"
+                        class="bg-[#1d3b58] hover:bg-[#152c42] text-white text-xs md:text-sm font-semibold px-5 py-2.5 rounded-lg shadow-md flex items-center justify-center gap-2 btn-action">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>+ NUEVO ARTÍCULO</span>
+                    </button>
+                </div>
+
+                <!-- Filtros y Buscador de Inventario -->
+                <div class="mb-4 flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1 flex items-center bg-[#ebe5d5] rounded-lg px-4 py-2.5 border border-[#dfd7c4] focus-within:border-navy-800 focus-within:bg-white transition">
+                        <i class="fa-solid fa-magnifying-glass text-stone-500 text-sm mr-3"></i>
+                        <input type="text" id="inventory-search-input" oninput="renderInventory()"
+                            placeholder="Buscar tela, código o accesorio..."
+                            class="w-full bg-transparent text-sm text-stone-800 placeholder-stone-500 focus:outline-none">
+                    </div>
+
+                    <select id="inventory-cat-filter" onchange="renderInventory()"
+                        class="bg-[#eee9dc] border border-[#dad1bc] text-stone-800 text-xs font-semibold rounded-lg px-4 py-2.5 focus:outline-none cursor-pointer">
+                        <option value="ALL">Todas las Categorías</option>
+                        <option value="Telas">Categoría: Telas</option>
+                        <option value="Accesorios">Categoría: Accesorios</option>
+                        <option value="Prendas Terminadas">Categoría: Prendas Terminadas</option>
+                    </select>
+                </div>
+
+                <!-- Tabla de Inventario -->
+                <div class="bg-[#fcfaf5] rounded-xl shadow-sm border border-[#e6dfd0] overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#eee8d8] text-stone-800 text-xs font-bold border-b border-[#e0d8c3]">
+                                    <th class="py-3 px-4">Código / Artículo</th>
+                                    <th class="py-3 px-4">Categoría</th>
+                                    <th class="py-3 px-4">Stock (+/-)</th>
+                                    <th class="py-3 px-4">Precio Unit.</th>
+                                    <th class="py-3 px-4">Fecha Ingreso</th>
+                                    <th class="py-3 px-4 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody" class="divide-y divide-[#ebe4d4] text-sm">
+                                <!-- Se llena con JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VISTA 5: REPORTES FINANCIEROS Y FILTRO POR RANGO DE FECHAS
+                 ========================================== -->
+            <section id="view-reportes" class="hidden max-w-6xl mx-auto animate-fade-up">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-wide text-stone-900 uppercase">
+                            REPORTES FINANCIEROS Y ESTADÍSTICAS
+                        </h1>
+                        <p class="text-xs text-stone-600 mt-0.5">Filtra tus ingresos por rango de fechas y analiza el rendimiento de Sastrería Elegance</p>
+                    </div>
+                    <button onclick="exportReportSummary()"
+                        class="bg-[#1d3b58] hover:bg-[#152c42] text-white text-xs font-semibold px-5 py-2.5 rounded-lg shadow-md flex items-center justify-center gap-2 btn-action">
+                        <i class="fa-solid fa-file-export text-xs"></i>
+                        <span>EXPORTAR / COPIAR REPORTE</span>
+                    </button>
+                </div>
+
+                <!-- Filtro por Rango de Fechas (<input type="date">) -->
+                <div class="bg-[#fcfaf5] p-4 rounded-xl border border-[#e6dfd0] shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2 bg-[#eee9dc] px-3 py-1.5 rounded-lg border border-[#dad1bc]">
+                            <label class="text-xs font-semibold text-stone-700">Desde:</label>
+                            <input type="date" id="rep-date-from" value="2023-10-01" onchange="renderReports()"
+                                class="bg-transparent text-xs font-medium text-stone-900 focus:outline-none cursor-pointer">
+                        </div>
+                        <div class="flex items-center gap-2 bg-[#eee9dc] px-3 py-1.5 rounded-lg border border-[#dad1bc]">
+                            <label class="text-xs font-semibold text-stone-700">Hasta:</label>
+                            <input type="date" id="rep-date-to" value="2026-12-31" onchange="renderReports()"
+                                class="bg-transparent text-xs font-medium text-stone-900 focus:outline-none cursor-pointer">
+                        </div>
+                        <button onclick="resetReportDates()" class="text-xs text-navy-800 hover:underline font-semibold">
+                            Ver todo el historial
+                        </button>
+                    </div>
+                    <span id="rep-filter-count" class="text-xs font-semibold text-stone-600">Mostrando 3 facturas en el periodo</span>
+                </div>
+
+                <!-- Tarjetas de Resumen del Periodo -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm">
+                        <span class="text-xs font-semibold text-stone-500 uppercase">Total Facturado en Periodo</span>
+                        <p id="rep-total-all" class="text-2xl font-bold text-navy-900 mt-1">Q3,230.00</p>
+                        <div class="w-full h-2 bg-cream-200 rounded-full mt-3 overflow-hidden">
+                            <div class="h-full bg-navy-800 w-full"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm">
+                        <span class="text-xs font-semibold text-stone-500 uppercase">Ingresos Pagados (Efectivo/Tarjeta)</span>
+                        <p id="rep-total-paid" class="text-2xl font-bold text-emerald-700 mt-1">Q2,340.00</p>
+                        <div class="w-full h-2 bg-cream-200 rounded-full mt-3 overflow-hidden">
+                            <div id="rep-bar-paid" class="h-full bg-emerald-600 transition-all duration-500" style="width: 72%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm">
+                        <span class="text-xs font-semibold text-stone-500 uppercase">Saldo Pendiente por Liquidar</span>
+                        <p id="rep-total-pending" class="text-2xl font-bold text-amber-600 mt-1">Q890.00</p>
+                        <div class="w-full h-2 bg-cream-200 rounded-full mt-3 overflow-hidden">
+                            <div id="rep-bar-pending" class="h-full bg-amber-500 transition-all duration-500" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ranking de Top Clientes + Valor de Inventario -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm">
+                        <h3 class="font-bold text-stone-800 text-sm mb-3 border-b border-[#ede6d6] pb-2">
+                            Top Clientes por Volumen de Facturación
+                        </h3>
+                        <div id="rep-top-clients" class="space-y-3">
+                            <!-- Dinámico con JS -->
+                        </div>
+                    </div>
+
+                    <div class="bg-[#fcfaf5] p-5 rounded-xl border border-[#e6dfd0] shadow-sm">
+                        <h3 class="font-bold text-stone-800 text-sm mb-3 border-b border-[#ede6d6] pb-2">
+                            Valorización del Inventario Actual
+                        </h3>
+                        <div id="rep-inventory-summary" class="space-y-3 text-xs">
+                            <!-- Dinámico con JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 VISTA 6: AJUSTES DEL SISTEMA (MONEDA, DATOS FISCALES Y DEMO)
+                 ========================================== -->
+            <section id="view-ajustes" class="hidden max-w-4xl mx-auto animate-fade-up">
+                <div class="mb-6">
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide text-stone-900 uppercase">
+                        AJUSTES DE LA SASTRERÍA
+                    </h1>
+                    <p class="text-xs text-stone-600 mt-0.5">Personaliza el nombre comercial, el símbolo de moneda (Q, $, €, COP) y los datos de facturación</p>
+                </div>
+
+                <div class="bg-[#fcfaf5] rounded-2xl p-6 md:p-8 border border-[#e6dfd0] shadow-sm">
+                    <form onsubmit="saveSettings(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-700 mb-1.5">Nombre de la Sastrería</label>
+                                <input type="text" id="set-brand-name" value="Sastrería Elegance" required
+                                    class="w-full px-3.5 py-2.5 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-700 mb-1.5">Símbolo de Moneda Activa</label>
+                                <select id="set-currency"
+                                    class="w-full px-3.5 py-2.5 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800 cursor-pointer">
+                                    <option value="Q">Quetzal Guatemalteco (Q)</option>
+                                    <option value="$">Dólar / Peso ($)</option>
+                                    <option value="COP ">Peso Colombiano (COP)</option>
+                                    <option value="€">Euro (€)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-700 mb-1.5">NIT / Identificación Fiscal</label>
+                                <input type="text" id="set-tax-id" value="CF-9084721-8"
+                                    class="w-full px-3.5 py-2.5 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-stone-700 mb-1.5">Meta Mensual de Ingresos</label>
+                                <input type="number" step="100" id="set-monthly-goal" value="3500"
+                                    class="w-full px-3.5 py-2.5 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-stone-700 mb-1.5">Dirección y Pie de Factura</label>
+                            <input type="text" id="set-address" value="Av. Reforma 12-45, Zona 10 • Alta Costura Hecha a Medida"
+                                class="w-full px-3.5 py-2.5 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                        </div>
+
+                        <div class="pt-4 border-t border-[#e8dfd0] flex flex-wrap items-center justify-between gap-3">
+                            <button type="button" onclick="restoreDemoData()"
+                                class="px-4 py-2.5 rounded-lg bg-cream-200 hover:bg-cream-300 text-stone-800 text-xs font-semibold transition">
+                                <i class="fa-solid fa-rotate-left mr-1.5"></i> Restaurar Datos de Demostración
+                            </button>
+
+                            <button type="submit"
+                                class="px-6 py-2.5 rounded-lg bg-[#1d3b58] hover:bg-[#152c42] text-white text-xs font-semibold shadow-md btn-action">
+                                <i class="fa-solid fa-floppy-disk mr-1.5"></i> Guardar Ajustes y Actualizar Moneda
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==========================================
+         MODAL 1: CREAR / EDITAR FACTURA (CON <input type="date">)
+         ========================================== -->
+    <div id="invoice-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-[#fcfaf5] border border-[#e0d6c3] rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-up">
+            <div class="flex items-center justify-between border-b border-[#e8dfd0] pb-3 mb-4">
+                <h3 id="modal-title" class="font-serif text-lg font-bold text-navy-900">Crear Nueva Factura</h3>
+                <button onclick="closeInvoiceModal()" class="text-stone-400 hover:text-stone-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="invoice-form" onsubmit="saveInvoice(event)" class="space-y-4">
+                <input type="hidden" id="edit-index" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">ID Factura</label>
+                        <input type="text" id="inv-id" placeholder="#0126" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Fecha de Emisión</label>
+                        <input type="date" id="inv-date" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800 cursor-pointer">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Nombre del Cliente</label>
+                    <input type="text" id="inv-client" list="clients-datalist" placeholder="Ej. Juan Pérez" required
+                        class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    <datalist id="clients-datalist"></datalist>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Estatus</label>
+                        <select id="inv-status"
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                            <option value="Pagado">Pagado</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Total</label>
+                        <input type="number" step="0.01" id="inv-total" placeholder="1450.00" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Concepto / Prenda a Medida</label>
+                    <input type="text" id="inv-desc" placeholder="Confección de traje sastre a medida"
+                        class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-[#e8dfd0]">
+                    <button type="button" onclick="closeInvoiceModal()"
+                        class="px-4 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-cream-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2 rounded-lg text-xs font-semibold bg-[#1d3b58] hover:bg-[#152c42] text-white shadow transition">
+                        Guardar Factura
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 2: VER DETALLES DE LA FACTURA / FICHA
+         ========================================== -->
+    <div id="details-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-[#fcfaf5] border border-[#e0d6c3] rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-up">
+            <div class="flex items-center justify-between border-b border-[#e8dfd0] pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice text-navy-800"></i>
+                    <h3 class="font-serif text-lg font-bold text-navy-900">Detalle <span id="det-id"></span></h3>
+                </div>
+                <button onclick="closeDetailsModal()" class="text-stone-400 hover:text-stone-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-sm bg-cream-100 p-4 rounded-xl border border-cream-300">
+                <div class="flex justify-between">
+                    <span class="text-stone-500">Cliente:</span>
+                    <span id="det-client" class="font-bold text-stone-900"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-stone-500">Fecha registrada:</span>
+                    <span id="det-date" class="font-medium text-stone-800"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-stone-500">Estatus / Teléfono:</span>
+                    <span id="det-status" class="font-bold"></span>
+                </div>
+                <div class="flex justify-between gap-4">
+                    <span class="text-stone-500 shrink-0">Detalle / Medidas:</span>
+                    <span id="det-desc" class="font-medium text-stone-800 text-right"></span>
+                </div>
+                <div class="flex justify-between border-t border-cream-300 pt-2 text-base">
+                    <span class="font-bold text-stone-700">Total / Referencia:</span>
+                    <span id="det-total" class="font-bold text-navy-900"></span>
+                </div>
+            </div>
+
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeDetailsModal()" class="px-5 py-2 bg-navy-800 text-white text-xs font-semibold rounded-lg hover:bg-navy-900 transition">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 3: CREAR / EDITAR CLIENTE Y SUS MEDIDAS
+         ========================================== -->
+    <div id="client-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-[#fcfaf5] border border-[#e0d6c3] rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-up">
+            <div class="flex items-center justify-between border-b border-[#e8dfd0] pb-3 mb-4">
+                <h3 id="client-modal-title" class="font-serif text-lg font-bold text-navy-900">Nuevo Cliente y Medidas</h3>
+                <button onclick="closeClientModal()" class="text-stone-400 hover:text-stone-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveClient(event)" class="space-y-3.5">
+                <input type="hidden" id="client-edit-id" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Nombre Completo</label>
+                        <input type="text" id="cli-name" placeholder="Ej. Juan Pérez" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Teléfono</label>
+                        <input type="text" id="cli-phone" placeholder="5544-3322" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-stone-700 mb-1">Saco/Pecho</label>
+                        <input type="text" id="cli-chest" placeholder="40R" required
+                            class="w-full px-2.5 py-2 bg-white border border-[#dcd2be] rounded-lg text-xs focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-stone-700 mb-1">Cintura</label>
+                        <input type="text" id="cli-waist" placeholder="34 in" required
+                            class="w-full px-2.5 py-2 bg-white border border-[#dcd2be] rounded-lg text-xs focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-stone-700 mb-1">Largo Manga</label>
+                        <input type="text" id="cli-length" placeholder="64 cm" required
+                            class="w-full px-2.5 py-2 bg-white border border-[#dcd2be] rounded-lg text-xs focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-stone-700 mb-1">Hombros</label>
+                        <input type="text" id="cli-shoulders" placeholder="47 cm" required
+                            class="w-full px-2.5 py-2 bg-white border border-[#dcd2be] rounded-lg text-xs focus:outline-none focus:border-navy-800">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Fecha de Toma de Medidas</label>
+                    <input type="date" id="cli-date" required
+                        class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800 cursor-pointer">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-[#e8dfd0]">
+                    <button type="button" onclick="closeClientModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-cream-200">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-lg text-xs font-semibold bg-[#1d3b58] hover:bg-[#152c42] text-white shadow">
+                        Guardar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL 4: CREAR / EDITAR ARTÍCULO DE INVENTARIO
+         ========================================== -->
+    <div id="inventory-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+        <div class="bg-[#fcfaf5] border border-[#e0d6c3] rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-up">
+            <div class="flex items-center justify-between border-b border-[#e8dfd0] pb-3 mb-4">
+                <h3 id="inv-modal-title" class="font-serif text-lg font-bold text-navy-900">Nuevo Artículo de Inventario</h3>
+                <button onclick="closeInventoryModal()" class="text-stone-400 hover:text-stone-700">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="saveInventoryItem(event)" class="space-y-3.5">
+                <input type="hidden" id="item-edit-id" value="">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Código</label>
+                        <input type="text" id="item-code" placeholder="TEL-005" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Categoría</label>
+                        <select id="item-category"
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                            <option value="Telas">Telas</option>
+                            <option value="Accesorios">Accesorios</option>
+                            <option value="Prendas Terminadas">Prendas Terminadas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Nombre del Artículo / Tela</label>
+                    <input type="text" id="item-name" placeholder="Casimir Inglés Super 120s Azul Marino" required
+                        class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Cantidad</label>
+                        <input type="number" id="item-stock" placeholder="12" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Unidad</label>
+                        <input type="text" id="item-unit" placeholder="Metros" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-700 mb-1">Costo Unit.</label>
+                        <input type="number" step="0.01" id="item-price" placeholder="250.00" required
+                            class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-700 mb-1">Fecha de Ingreso al Almacén</label>
+                    <input type="date" id="item-date" required
+                        class="w-full px-3 py-2 bg-white border border-[#dcd2be] rounded-lg text-sm focus:outline-none focus:border-navy-800 cursor-pointer">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-[#e8dfd0]">
+                    <button type="button" onclick="closeInventoryModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-stone-600 hover:bg-cream-200">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-lg text-xs font-semibold bg-[#1d3b58] hover:bg-[#152c42] text-white shadow">
+                        Guardar Artículo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 bg-navy-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg">
+        <i class="fa-solid fa-circle-check text-gold-400"></i>
+        <span id="toast-msg">Acción completada</span>
+    </div>
+
+    <!-- ==========================================
+         LÓGICA JAVASCRIPT DE LA APLICACIÓN COMPLETA
+         ========================================== -->
+    <script>
+        // Configuración general editable desde la vista Ajustes
+        let appConfig = {
+            brandName: 'Sastrería Elegance',
+            currency: 'Q',
+            taxId: 'CF-9084721-8',
+            monthlyGoal: 3500,
+            address: 'Av. Reforma 12-45, Zona 10 • Alta Costura Hecha a Medida'
+        };
+
+        // Datos iniciales de Facturas (Con fecha ISO YYYY-MM-DD para <input type="date">)
+        const initialInvoices = [
+            {
+                uid: 1,
+                id: '#0123',
+                client: 'Juan Pérez',
+                date: '2023-10-25',
+                status: 'Pagado',
+                stage: 'Entregado',
+                total: 1450.00,
+                desc: 'Traje Sastre Azul Marino 3 Piezas (Casimir Inglés)'
+            },
+            {
+                uid: 2,
+                id: '#0124',
+                client: 'María Gómez',
+                date: '2023-10-24',
+                status: 'Pendiente',
+                stage: 'Prueba',
+                total: 890.00,
+                desc: 'Conjunto Sastre Femenino Lino Beige a Medida'
+            },
+            {
+                uid: 3,
+                id: '#0125',
+                client: 'Juan Pérez',
+                date: '2023-10-25',
+                status: 'Pagado',
+                stage: 'Corte',
+                total: 890.00,
+                desc: '2 Camisas Oxford de Puño Francés con Iniciales Bordadas'
+            }
+        ];
+
+        // Datos iniciales de Clientes con Medidas de Sastrería
+        const initialClients = [
+            {
+                id: 101,
+                name: 'Juan Pérez',
+                phone: '5541-8890',
+                chest: '42R',
+                waist: '34 in',
+                length: '65 cm',
+                shoulders: '48 cm',
+                date: '2023-10-25'
+            },
+            {
+                id: 102,
+                name: 'María Gómez',
+                phone: '4412-3309',
+                chest: '36S',
+                waist: '28 in',
+                length: '59 cm',
+                shoulders: '40 cm',
+                date: '2023-10-24'
+            },
+            {
+                id: 103,
+                name: 'Carlos Alvarado',
+                phone: '5890-1122',
+                chest: '44L',
+                waist: '38 in',
+                length: '67 cm',
+                shoulders: '50 cm',
+                date: '2023-10-20'
+            },
+            {
+                id: 104,
+                name: 'Roberto Mendoza',
+                phone: '3319-7740',
+                chest: '40R',
+                waist: '32 in',
+                length: '63 cm',
+                shoulders: '46 cm',
+                date: '2023-10-18'
+            }
+        ];
+
+        // Datos iniciales de Inventario de Sastrería
+        const initialInventory = [
+            {
+                id: 201,
+                code: 'TEL-001',
+                name: 'Casimir Inglés Super 130s Azul Marino',
+                category: 'Telas',
+                stock: 18,
+                unit: 'Metros',
+                price: 280.00,
+                date: '2023-10-15'
+            },
+            {
+                id: 202,
+                code: 'TEL-002',
+                name: 'Lino Italiano Imperial Beige Natural',
+                category: 'Telas',
+                stock: 4,
+                unit: 'Metros',
+                price: 210.00,
+                date: '2023-10-18'
+            },
+            {
+                id: 203,
+                code: 'ACC-010',
+                name: 'Botones de Corozo y Carrete Hilo Dorado',
+                category: 'Accesorios',
+                stock: 25,
+                unit: 'Sets',
+                price: 45.00,
+                date: '2023-10-20'
+            },
+            {
+                id: 204,
+                code: 'PRN-004',
+                name: 'Smoking de Gala Negro Solapa de Seda',
+                category: 'Prendas Terminadas',
+                stock: 2,
+                unit: 'Trajes',
+                price: 1650.00,
+                date: '2023-10-25'
+            }
+        ];
+
+        let invoices = JSON.parse(JSON.stringify(initialInvoices));
+        let clients = JSON.parse(JSON.stringify(initialClients));
+        let inventory = JSON.parse(JSON.stringify(initialInventory));
+        let splashTimers = [];
+
+        // Convierte fecha YYYY-MM-DD a formato legible "25 Oct 2023" igual a la foto
+        function formatReadableDate(isoDate) {
+            if (!isoDate) return '';
+            const parts = isoDate.split('-');
+            if (parts.length !== 3) return isoDate;
+            const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            const year = parts[0];
+            const monthIdx = parseInt(parts[1], 10) - 1;
+            const day = parts[2];
+            return `${day} ${months[monthIdx] || 'Oct'} ${year}`;
+        }
+
+        // Formatea moneda según el símbolo elegido en Ajustes (Por defecto Q1,450.00)
+        function formatCurrency(val) {
+            return appConfig.currency + Number(val || 0).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Control de la animación Pre-Login (Aguja e hilo girando)
+        function startSplashAnimation() {
+            clearSplashTimers();
+            const splash = document.getElementById('splash-screen');
+            const progress = document.getElementById('splash-progress');
+            const status = document.getElementById('splash-status');
+
+            splash.classList.remove('hidden', 'opacity-0');
+            progress.style.width = '15%';
+            status.textContent = 'Enhebrando aguja e hilo de oro...';
+
+            splashTimers.push(setTimeout(() => {
+                progress.style.width = '55%';
+                status.textContent = 'Cargando moldes y registro de facturas...';
+            }, 850));
+
+            splashTimers.push(setTimeout(() => {
+                progress.style.width = '100%';
+                status.textContent = '¡Bienvenido a ' + appConfig.brandName + '!';
+            }, 1800));
+
+            splashTimers.push(setTimeout(() => {
+                goToLogin();
+            }, 2500));
+        }
+
+        function clearSplashTimers() {
+            splashTimers.forEach(t => clearTimeout(t));
+            splashTimers = [];
+        }
+
+        function replaySplash() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('flex');
+            document.getElementById('app-container').classList.add('hidden');
+            startSplashAnimation();
+        }
+
+        function goToLogin() {
+            clearSplashTimers();
+            const splash = document.getElementById('splash-screen');
+            const login = document.getElementById('login-screen');
+            const app = document.getElementById('app-container');
+
+            splash.classList.add('opacity-0');
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                app.classList.add('hidden');
+                login.classList.remove('hidden');
+                login.classList.add('flex');
+            }, 350);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            enterApp('facturas');
+            showToast('Sesión iniciada correctamente en ' + appConfig.brandName);
+        }
+
+        function enterApp(initialView = 'facturas') {
+            clearSplashTimers();
+            document.getElementById('splash-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('flex');
+
+            const app = document.getElementById('app-container');
+            app.classList.remove('hidden');
+
+            refreshAllViews();
+            switchView(initialView);
+        }
+
+        // Navegación entre las 6 secciones 100% funcionales del Sidebar
+        function switchView(viewName) {
+            const allSections = ['facturas', 'dashboard', 'clientes', 'inventario', 'reportes', 'ajustes'];
+            allSections.forEach(sec => {
+                const el = document.getElementById('view-' + sec);
+                if (el) el.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = 'nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-medium text-stone-700 hover:bg-cream-300/60 transition';
+            });
+
+            document.getElementById('nav-facturas-label').textContent = viewName === 'facturas' ? 'Facturas (Active)' : 'Facturas';
+
+            const activeBtn = document.getElementById('nav-' + viewName);
+            if (activeBtn) {
+                activeBtn.className = 'nav-btn w-full flex items-center gap-3.5 px-4 py-2.5 rounded-lg text-sm font-semibold bg-[#cbb286] text-stone-900 shadow-sm transition';
+            }
+
+            const targetSection = document.getElementById('view-' + viewName);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            refreshAllViews();
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }
+
+        function refreshAllViews() {
+            renderInvoices();
+            renderClients();
+            renderInventory();
+            renderReports();
+            renderDashboardOrders();
+            updateClientsDatalist();
+        }
+
+        // ==========================================
+        // SECCIÓN 1: FACTURAS CON <input type="date"> EN TABLA Y CRUD
+        // ==========================================
+        function renderInvoices() {
+            const tbody = document.getElementById('invoices-tbody');
+            const search = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+            const statusFilter = document.getElementById('filter-status')?.value || 'ALL';
+            const amountFilter = document.getElementById('filter-amount')?.value || 'ALL';
+            const dateFilter = document.getElementById('filter-date')?.value || '';
+
+            let filtered = invoices.filter(item => {
+                const readableDate = formatReadableDate(item.date).toLowerCase();
+                const matchSearch = item.id.toLowerCase().includes(search) ||
+                                    item.client.toLowerCase().includes(search) ||
+                                    item.date.toLowerCase().includes(search) ||
+                                    readableDate.includes(search) ||
+                                    (item.desc || '').toLowerCase().includes(search);
+
+                const matchStatus = statusFilter === 'ALL' || item.status === statusFilter;
+                const matchAmount = (amountFilter === 'ALL' || amountFilter === 'SORT_DESC' || amountFilter === 'SORT_ASC') ||
+                                    (amountFilter === 'HIGH' && item.total > 1000) ||
+                                    (amountFilter === 'LOW' && item.total <= 1000);
+                const matchDate = !dateFilter || item.date === dateFilter;
+
+                return matchSearch && matchStatus && matchAmount && matchDate;
+            });
+
+            if (amountFilter === 'SORT_DESC') {
+                filtered.sort((a, b) => b.total - a.total);
+            } else if (amountFilter === 'SORT_ASC') {
+                filtered.sort((a, b) => a.total - b.total);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-10 text-center text-stone-500 text-sm">
+                            No se encontraron facturas con esos criterios de fecha o búsqueda.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = filtered.map((inv) => {
+                    const isPaid = inv.status === 'Pagado';
+                    const statusClass = isPaid
+                        ? 'text-[#3b7a57] font-semibold'
+                        : 'text-[#c99738] font-semibold';
+
+                    return `
+                        <tr class="hover:bg-[#f5f0e4] transition-colors">
+                            <td class="py-4 px-4 font-semibold text-stone-800 whitespace-nowrap">${inv.id}</td>
+                            <td class="py-4 px-4 font-medium text-stone-800 whitespace-nowrap">${inv.client}</td>
+                            <td class="py-3 px-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <input type="date" value="${inv.date}"
+                                        onchange="updateInvoiceDateInline(${inv.uid}, this.value)"
+                                        title="Haz clic para cambiar la fecha directamente en la tabla"
+                                        class="bg-[#f3ede0] hover:bg-white border border-[#dcd2be] rounded-md px-2 py-1 text-xs font-medium text-stone-800 focus:outline-none focus:border-navy-800 cursor-pointer w-36">
+                                    <span class="text-[11px] text-stone-500 mt-0.5 pl-1">${formatReadableDate(inv.date)}</span>
+                                </div>
+                            </td>
+                            <td class="py-4 px-4 whitespace-nowrap">
+                                <button onclick="toggleInvoiceStatus(${inv.uid})" title="Clic para alternar Pagado / Pendiente" class="${statusClass} hover:underline">
+                                    ${inv.status}
+                                </button>
+                            </td>
+                            <td class="py-4 px-4 font-bold text-stone-900 whitespace-nowrap">${formatCurrency(inv.total)}</td>
+                            <td class="py-2.5 px-4">
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <button onclick="viewInvoiceDetails(${inv.uid})"
+                                        class="w-28 py-1 px-2.5 rounded-full bg-[#1d3b58] hover:bg-[#14293d] text-white text-[11px] font-medium flex items-center justify-center gap-1.5 shadow-xs btn-action">
+                                        <i class="fa-solid fa-eye text-[10px]"></i>
+                                        <span>Ver Detalles</span>
+                                    </button>
+                                    <button onclick="openInvoiceModal(${inv.uid})"
+                                        class="w-24 py-1 px-2.5 rounded-full bg-[#2b547e] hover:bg-[#1e3d5c] text-white text-[11px] font-medium flex items-center justify-center gap-1.5 shadow-xs btn-action">
+                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                        <span>Editar</span>
+                                    </button>
+                                    <button onclick="deleteInvoice(${inv.uid})"
+                                        class="w-24 py-1 px-2.5 rounded-full bg-[#b83c33] hover:bg-[#962d25] text-white text-[11px] font-medium flex items-center justify-center gap-1.5 shadow-xs btn-action">
+                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                        <span>Borrar</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateRightWidgets();
+        }
+
+        // Permite cambiar la fecha directamente desde el <input type="date"> dentro de la tabla
+        function updateInvoiceDateInline(uid, newIsoDate) {
+            if (!newIsoDate) return;
+            const inv = invoices.find(i => i.uid === uid);
+            if (inv) {
+                inv.date = newIsoDate;
+                refreshAllViews();
+                showToast(`Fecha de factura ${inv.id} actualizada a ${formatReadableDate(newIsoDate)}`);
+            }
+        }
+
+        function toggleInvoiceStatus(uid) {
+            const inv = invoices.find(i => i.uid === uid);
+            if (inv) {
+                inv.status = inv.status === 'Pagado' ? 'Pendiente' : 'Pagado';
+                refreshAllViews();
+                showToast(`Estatus de factura ${inv.id} cambiado a ${inv.status}`);
+            }
+        }
+
+        function updateRightWidgets() {
+            const paidTotal = invoices.filter(i => i.status === 'Pagado').reduce((acc, i) => acc + Number(i.total), 0);
+            const pendingList = invoices.filter(i => i.status === 'Pendiente');
+            const pendingTotal = pendingList.reduce((acc, i) => acc + Number(i.total), 0);
+            const grandTotal = paidTotal + pendingTotal;
+
+            document.getElementById('summary-count').textContent = invoices.length;
+            document.getElementById('summary-pending-count').textContent = pendingList.length;
+            document.getElementById('summary-paid').textContent = formatCurrency(paidTotal);
+            document.getElementById('summary-total').textContent = formatCurrency(grandTotal);
+
+            // Actualizar KPIs del Dashboard
+            const dashPaid = document.getElementById('dash-paid');
+            const dashPending = document.getElementById('dash-pending');
+            const dashPendingSub = document.getElementById('dash-pending-sub');
+            const dashClientsCount = document.getElementById('dash-clients-count');
+            const dashInvCount = document.getElementById('dash-inventory-count');
+
+            if (dashPaid) dashPaid.textContent = formatCurrency(paidTotal);
+            if (dashPending) dashPending.textContent = formatCurrency(pendingTotal);
+            if (dashPendingSub) dashPendingSub.textContent = `${pendingList.length} factura(s) por cobrar`;
+            if (dashClientsCount) dashClientsCount.textContent = `${clients.length} Clientes`;
+            if (dashInvCount) dashInvCount.textContent = `${inventory.length} Artículos`;
+
+            const lowStockItems = inventory.filter(item => item.stock <= 5).length;
+            const lowStockEl = document.getElementById('dash-low-stock');
+            if (lowStockEl) {
+                lowStockEl.textContent = lowStockItems > 0 ? `¡Atención! ${lowStockItems} con stock bajo` : 'Stock de taller óptimo';
+            }
+
+            // Barras de progreso del Dashboard
+            const goalPct = Math.min(100, Math.round((paidTotal / (appConfig.monthlyGoal || 3500)) * 100));
+            const paidRate = grandTotal > 0 ? Math.round((paidTotal / grandTotal) * 100) : 0;
+            const goalPctEl = document.getElementById('dash-goal-pct');
+            const goalBarEl = document.getElementById('dash-goal-bar');
+            const paidRateEl = document.getElementById('dash-paid-rate');
+            const paidBarEl = document.getElementById('dash-paid-bar');
+
+            if (goalPctEl) goalPctEl.textContent = goalPct + '%';
+            if (goalBarEl) goalBarEl.style.width = goalPct + '%';
+            if (paidRateEl) paidRateEl.textContent = paidRate + '%';
+            if (paidBarEl) paidBarEl.style.width = paidRate + '%';
+
+            // Clientes Recientes en la columna derecha de Facturas
+            const recentContainer = document.getElementById('recent-clients-list');
+            const recentList = invoices.slice(0, 4).map(i => ({
+                name: i.client,
+                date: formatReadableDate(i.date)
+            }));
+
+            recentContainer.innerHTML = recentList.map(c => `
+                <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-full bg-[#e8dec8] text-[#9c8459] flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-user text-xs"></i>
+                    </div>
+                    <div class="leading-tight">
+                        <p class="text-xs font-bold text-stone-800">${c.name}</p>
+                        <p class="text-[10px] text-stone-500">${c.date}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-status').value = 'ALL';
+            document.getElementById('filter-amount').value = 'ALL';
+            document.getElementById('filter-date').value = '';
+            renderInvoices();
+            showToast('Filtros de facturas restablecidos');
+        }
+
+        function toggleSortId() {
+            invoices.reverse();
+            renderInvoices();
+        }
+
+        function openInvoiceModal(uid = null) {
+            const modal = document.getElementById('invoice-modal');
+            const title = document.getElementById('modal-title');
+            const editField = document.getElementById('edit-index');
+
+            if (uid !== null) {
+                const inv = invoices.find(i => i.uid === uid);
+                if (!inv) return;
+                title.textContent = 'Editar Factura ' + inv.id;
+                editField.value = uid;
+                document.getElementById('inv-id').value = inv.id;
+                document.getElementById('inv-client').value = inv.client;
+                document.getElementById('inv-date').value = inv.date;
+                document.getElementById('inv-status').value = inv.status;
+                document.getElementById('inv-total').value = inv.total;
+                document.getElementById('inv-desc').value = inv.desc || '';
+            } else {
+                title.textContent = 'Crear Nueva Factura';
+                editField.value = '';
+                document.getElementById('inv-id').value = '#012' + (invoices.length + 3);
+                document.getElementById('inv-client').value = '';
+                document.getElementById('inv-date').value = '2023-10-25';
+                document.getElementById('inv-status').value = 'Pagado';
+                document.getElementById('inv-total').value = '';
+                document.getElementById('inv-desc').value = 'Confección de traje sastre a medida';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeInvoiceModal() {
+            const modal = document.getElementById('invoice-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveInvoice(e) {
+            e.preventDefault();
+            const uid = document.getElementById('edit-index').value;
+            const newItem = {
+                uid: uid ? Number(uid) : Date.now(),
+                id: document.getElementById('inv-id').value.trim(),
+                client: document.getElementById('inv-client').value.trim(),
+                date: document.getElementById('inv-date').value,
+                status: document.getElementById('inv-status').value,
+                stage: 'Toma de medidas',
+                total: parseFloat(document.getElementById('inv-total').value) || 0,
+                desc: document.getElementById('inv-desc').value.trim() || 'Servicio de Sastrería Elegance'
+            };
+
+            if (uid) {
+                const idx = invoices.findIndex(i => i.uid === Number(uid));
+                if (idx > -1) {
+                    newItem.stage = invoices[idx].stage || 'Prueba';
+                    invoices[idx] = newItem;
+                }
+                showToast('Factura actualizada correctamente');
+            } else {
+                invoices.unshift(newItem);
+                showToast('Nueva factura creada con fecha ' + formatReadableDate(newItem.date));
+            }
+
+            closeInvoiceModal();
+            refreshAllViews();
+        }
+
+        function viewInvoiceDetails(uid) {
+            const inv = invoices.find(i => i.uid === uid);
+            if (!inv) return;
+
+            document.getElementById('det-id').textContent = inv.id;
+            document.getElementById('det-client').textContent = inv.client;
+            document.getElementById('det-date').textContent = `${formatReadableDate(inv.date)} (${inv.date})`;
+            document.getElementById('det-status').textContent = inv.status;
+            document.getElementById('det-status').className = inv.status === 'Pagado' ? 'font-bold text-[#3b7a57]' : 'font-bold text-[#c99738]';
+            document.getElementById('det-desc').textContent = inv.desc || 'Traje hecho a medida';
+            document.getElementById('det-total').textContent = formatCurrency(inv.total);
+
+            const modal = document.getElementById('details-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDetailsModal() {
+            const modal = document.getElementById('details-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function deleteInvoice(uid) {
+            invoices = invoices.filter(i => i.uid !== uid);
+            refreshAllViews();
+            showToast('Factura eliminada del registro');
+        }
+
+        // ==========================================
+        // SECCIÓN 2: DASHBOARD (ÓRDENES EN PROCESO)
+        // ==========================================
+        function renderDashboardOrders() {
+            const container = document.getElementById('dash-orders-list');
+            if (!container) return;
+
+            const stages = ['Toma de medidas', 'Corte', 'Prueba', 'Entregado'];
+
+            container.innerHTML = invoices.slice(0, 5).map(inv => {
+                const initials = inv.client.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const badgeClass = inv.status === 'Pagado'
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-amber-100 text-amber-800';
+
+                return `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-cream-100 border border-cream-300">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-navy-800 text-white flex items-center justify-center font-bold text-xs shrink-0">${initials}</div>
+                            <div>
+                                <p class="text-sm font-semibold text-stone-900">${inv.client} <span class="text-xs font-normal text-stone-500">(${inv.id})</span></p>
+                                <p class="text-xs text-stone-600">${inv.desc || 'Traje a medida'}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select onchange="updateOrderStage(${inv.uid}, this.value)"
+                                class="bg-white border border-cream-300 text-xs font-semibold text-navy-900 rounded-md px-2.5 py-1 focus:outline-none cursor-pointer">
+                                ${stages.map(st => `<option value="${st}" ${(inv.stage || 'Prueba') === st ? 'selected' : ''}>Etapa: ${st}</option>`).join('')}
+                            </select>
+                            <input type="date" value="${inv.date}" onchange="updateInvoiceDateInline(${inv.uid}, this.value)"
+                                class="bg-white border border-cream-300 rounded-md px-2 py-1 text-xs text-stone-700 cursor-pointer">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${badgeClass}">${inv.status} • ${formatCurrency(inv.total)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateOrderStage(uid, newStage) {
+            const inv = invoices.find(i => i.uid === uid);
+            if (inv) {
+                inv.stage = newStage;
+                showToast(`Orden ${inv.id} actualizada a etapa: ${newStage}`);
+            }
+        }
+
+        // ==========================================
+        // SECCIÓN 3: CLIENTES Y MEDIDAS (CRUD COMPLETO)
+        // ==========================================
+        function renderClients() {
+            const tbody = document.getElementById('clients-tbody');
+            if (!tbody) return;
+            const q = (document.getElementById('client-search-input')?.value || '').toLowerCase().trim();
+
+            const filtered = clients.filter(c =>
+                c.name.toLowerCase().includes(q) ||
+                c.phone.toLowerCase().includes(q) ||
+                c.chest.toLowerCase().includes(q)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-stone-500">No se encontraron clientes registrados.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(c => `
+                <tr class="hover:bg-[#f5f0e4] transition-colors">
+                    <td class="py-3.5 px-4 font-semibold text-stone-900">${c.name}</td>
+                    <td class="py-3.5 px-4 text-stone-700">${c.phone}</td>
+                    <td class="py-3.5 px-4">
+                        <div class="flex flex-wrap gap-1.5 text-xs">
+                            <span class="px-2 py-0.5 bg-cream-200 rounded font-medium">Saco: ${c.chest}</span>
+                            <span class="px-2 py-0.5 bg-cream-200 rounded font-medium">Cintura: ${c.waist}</span>
+                            <span class="px-2 py-0.5 bg-cream-200 rounded font-medium">Manga: ${c.length}</span>
+                            <span class="px-2 py-0.5 bg-cream-200 rounded font-medium">Hombros: ${c.shoulders}</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <input type="date" value="${c.date}" onchange="updateClientDateInline(${c.id}, this.value)"
+                            class="bg-[#f3ede0] border border-[#dcd2be] rounded px-2 py-1 text-xs font-medium text-stone-800 cursor-pointer">
+                    </td>
+                    <td class="py-2.5 px-4">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="viewClientFicha(${c.id})" class="px-2.5 py-1 rounded bg-[#1d3b58] text-white text-xs hover:bg-[#14293d] transition" title="Ver Ficha de Medidas">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="openClientModal(${c.id})" class="px-2.5 py-1 rounded bg-[#2b547e] text-white text-xs hover:bg-[#1e3d5c] transition" title="Editar Medidas">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteClient(${c.id})" class="px-2.5 py-1 rounded bg-[#b83c33] text-white text-xs hover:bg-[#962d25] transition" title="Eliminar Cliente">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateClientDateInline(id, newDate) {
+            const c = clients.find(x => x.id === id);
+            if (c && newDate) {
+                c.date = newDate;
+                showToast(`Fecha de registro de ${c.name} actualizada a ${formatReadableDate(newDate)}`);
+            }
+        }
+
+        function openClientModal(id = null) {
+            const modal = document.getElementById('client-modal');
+            const title = document.getElementById('client-modal-title');
+            const editId = document.getElementById('client-edit-id');
+
+            if (id !== null) {
+                const c = clients.find(x => x.id === id);
+                if (!c) return;
+                title.textContent = 'Editar Medidas de ' + c.name;
+                editId.value = c.id;
+                document.getElementById('cli-name').value = c.name;
+                document.getElementById('cli-phone').value = c.phone;
+                document.getElementById('cli-chest').value = c.chest;
+                document.getElementById('cli-waist').value = c.waist;
+                document.getElementById('cli-length').value = c.length;
+                document.getElementById('cli-shoulders').value = c.shoulders;
+                document.getElementById('cli-date').value = c.date;
+            } else {
+                title.textContent = 'Nuevo Cliente y Medidas';
+                editId.value = '';
+                document.getElementById('cli-name').value = '';
+                document.getElementById('cli-phone').value = '';
+                document.getElementById('cli-chest').value = '40R';
+                document.getElementById('cli-waist').value = '34 in';
+                document.getElementById('cli-length').value = '64 cm';
+                document.getElementById('cli-shoulders').value = '46 cm';
+                document.getElementById('cli-date').value = '2023-10-25';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeClientModal() {
+            const modal = document.getElementById('client-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveClient(e) {
+            e.preventDefault();
+            const editId = document.getElementById('client-edit-id').value;
+            const data = {
+                id: editId ? Number(editId) : Date.now(),
+                name: document.getElementById('cli-name').value.trim(),
+                phone: document.getElementById('cli-phone').value.trim(),
+                chest: document.getElementById('cli-chest').value.trim(),
+                waist: document.getElementById('cli-waist').value.trim(),
+                length: document.getElementById('cli-length').value.trim(),
+                shoulders: document.getElementById('cli-shoulders').value.trim(),
+                date: document.getElementById('cli-date').value
+            };
+
+            if (editId) {
+                const idx = clients.findIndex(x => x.id === Number(editId));
+                if (idx > -1) clients[idx] = data;
+                showToast('Ficha de medidas actualizada');
+            } else {
+                clients.unshift(data);
+                showToast('Nuevo cliente registrado en el directorio');
+            }
+
+            closeClientModal();
+            refreshAllViews();
+        }
+
+        function viewClientFicha(id) {
+            const c = clients.find(x => x.id === id);
+            if (!c) return;
+            document.getElementById('det-id').textContent = 'Ficha de Cliente';
+            document.getElementById('det-client').textContent = c.name;
+            document.getElementById('det-date').textContent = `${formatReadableDate(c.date)} (${c.date})`;
+            document.getElementById('det-status').textContent = 'Tel: ' + c.phone;
+            document.getElementById('det-status').className = 'font-bold text-navy-800';
+            document.getElementById('det-desc').textContent = `Saco: ${c.chest} | Cintura: ${c.waist} | Manga: ${c.length} | Hombros: ${c.shoulders}`;
+            document.getElementById('det-total').textContent = 'Medidas Verificadas';
+
+            const modal = document.getElementById('details-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function deleteClient(id) {
+            clients = clients.filter(x => x.id !== id);
+            refreshAllViews();
+            showToast('Cliente eliminado del directorio');
+        }
+
+        function updateClientsDatalist() {
+            const dl = document.getElementById('clients-datalist');
+            if (!dl) return;
+            dl.innerHTML = clients.map(c => `<option value="${c.name}">`).join('');
+        }
+
+        // ==========================================
+        // SECCIÓN 4: INVENTARIO DE TELAS Y TRAJES (CRUD COMPLETO)
+        // ==========================================
+        function renderInventory() {
+            const tbody = document.getElementById('inventory-tbody');
+            if (!tbody) return;
+
+            const q = (document.getElementById('inventory-search-input')?.value || '').toLowerCase().trim();
+            const cat = document.getElementById('inventory-cat-filter')?.value || 'ALL';
+
+            const filtered = inventory.filter(item => {
+                const matchText = item.name.toLowerCase().includes(q) || item.code.toLowerCase().includes(q);
+                const matchCat = cat === 'ALL' || item.category === cat;
+                return matchText && matchCat;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-stone-500">No se encontraron artículos en el inventario.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => {
+                const isLow = item.stock <= 5;
+                return `
+                    <tr class="hover:bg-[#f5f0e4] transition-colors">
+                        <td class="py-3.5 px-4">
+                            <span class="text-xs font-bold text-navy-800 block">${item.code}</span>
+                            <span class="font-medium text-stone-900">${item.name}</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-cream-200 text-stone-800">${item.category}</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <div class="flex items-center gap-2">
+                                <button onclick="adjustStock(${item.id}, -1)" class="w-6 h-6 rounded bg-cream-200 hover:bg-cream-300 text-stone-800 font-bold text-xs">-</button>
+                                <span class="font-bold ${isLow ? 'text-brick-600' : 'text-stone-900'}">${item.stock} ${item.unit}</span>
+                                <button onclick="adjustStock(${item.id}, 1)" class="w-6 h-6 rounded bg-cream-200 hover:bg-cream-300 text-stone-800 font-bold text-xs">+</button>
+                                ${isLow ? '<span class="text-[10px] px-1.5 py-0.5 bg-red-100 text-brick-600 rounded font-semibold">Stock Bajo</span>' : ''}
+                            </div>
+                        </td>
+                        <td class="py-3.5 px-4 font-bold text-stone-900">${formatCurrency(item.price)}</td>
+                        <td class="py-3.5 px-4">
+                            <input type="date" value="${item.date}" onchange="updateInventoryDateInline(${item.id}, this.value)"
+                                class="bg-[#f3ede0] border border-[#dcd2be] rounded px-2 py-1 text-xs font-medium text-stone-800 cursor-pointer">
+                        </td>
+                        <td class="py-2.5 px-4">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button onclick="openInventoryModal(${item.id})" class="px-2.5 py-1 rounded bg-[#2b547e] text-white text-xs hover:bg-[#1e3d5c] transition" title="Editar Artículo">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="deleteInventoryItem(${item.id})" class="px-2.5 py-1 rounded bg-[#b83c33] text-white text-xs hover:bg-[#962d25] transition" title="Borrar Artículo">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function adjustStock(id, delta) {
+            const item = inventory.find(x => x.id === id);
+            if (item) {
+                item.stock = Math.max(0, item.stock + delta);
+                refreshAllViews();
+                showToast(`Stock de ${item.code} actualizado a ${item.stock} ${item.unit}`);
+            }
+        }
+
+        function updateInventoryDateInline(id, newDate) {
+            const item = inventory.find(x => x.id === id);
+            if (item && newDate) {
+                item.date = newDate;
+                showToast(`Fecha de ingreso de ${item.code} actualizada a ${formatReadableDate(newDate)}`);
+            }
+        }
+
+        function openInventoryModal(id = null) {
+            const modal = document.getElementById('inventory-modal');
+            const title = document.getElementById('inv-modal-title');
+            const editId = document.getElementById('item-edit-id');
+
+            if (id !== null) {
+                const item = inventory.find(x => x.id === id);
+                if (!item) return;
+                title.textContent = 'Editar Artículo ' + item.code;
+                editId.value = item.id;
+                document.getElementById('item-code').value = item.code;
+                document.getElementById('item-category').value = item.category;
+                document.getElementById('item-name').value = item.name;
+                document.getElementById('item-stock').value = item.stock;
+                document.getElementById('item-unit').value = item.unit;
+                document.getElementById('item-price').value = item.price;
+                document.getElementById('item-date').value = item.date;
+            } else {
+                title.textContent = 'Nuevo Artículo de Inventario';
+                editId.value = '';
+                document.getElementById('item-code').value = 'TEL-00' + (inventory.length + 1);
+                document.getElementById('item-category').value = 'Telas';
+                document.getElementById('item-name').value = '';
+                document.getElementById('item-stock').value = 10;
+                document.getElementById('item-unit').value = 'Metros';
+                document.getElementById('item-price').value = '';
+                document.getElementById('item-date').value = '2023-10-25';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeInventoryModal() {
+            const modal = document.getElementById('inventory-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveInventoryItem(e) {
+            e.preventDefault();
+            const editId = document.getElementById('item-edit-id').value;
+            const data = {
+                id: editId ? Number(editId) : Date.now(),
+                code: document.getElementById('item-code').value.trim(),
+                category: document.getElementById('item-category').value,
+                name: document.getElementById('item-name').value.trim(),
+                stock: parseInt(document.getElementById('item-stock').value, 10) || 0,
+                unit: document.getElementById('item-unit').value.trim() || 'Unidades',
+                price: parseFloat(document.getElementById('item-price').value) || 0,
+                date: document.getElementById('item-date').value
+            };
+
+            if (editId) {
+                const idx = inventory.findIndex(x => x.id === Number(editId));
+                if (idx > -1) inventory[idx] = data;
+                showToast('Artículo de inventario actualizado');
+            } else {
+                inventory.unshift(data);
+                showToast('Nuevo artículo agregado al inventario');
+            }
+
+            closeInventoryModal();
+            refreshAllViews();
+        }
+
+        function deleteInventoryItem(id) {
+            inventory = inventory.filter(x => x.id !== id);
+            refreshAllViews();
+            showToast('Artículo eliminado del inventario');
+        }
+
+        // ==========================================
+        // SECCIÓN 5: REPORTES FINANCIEROS DINÁMICOS
+        // ==========================================
+        function renderReports() {
+            const fromDate = document.getElementById('rep-date-from')?.value || '2000-01-01';
+            const toDate = document.getElementById('rep-date-to')?.value || '2099-12-31';
+
+            const inRange = invoices.filter(i => i.date >= fromDate && i.date <= toDate);
+            const paid = inRange.filter(i => i.status === 'Pagado').reduce((a, b) => a + Number(b.total), 0);
+            const pending = inRange.filter(i => i.status === 'Pendiente').reduce((a, b) => a + Number(b.total), 0);
+            const total = paid + pending;
+
+            const countEl = document.getElementById('rep-filter-count');
+            if (countEl) countEl.textContent = `Mostrando ${inRange.length} factura(s) en el periodo`;
+
+            const totalAllEl = document.getElementById('rep-total-all');
+            const totalPaidEl = document.getElementById('rep-total-paid');
+            const totalPendEl = document.getElementById('rep-total-pending');
+
+            if (totalAllEl) totalAllEl.textContent = formatCurrency(total);
+            if (totalPaidEl) totalPaidEl.textContent = formatCurrency(paid);
+            if (totalPendEl) totalPendEl.textContent = formatCurrency(pending);
+
+            const paidPct = total > 0 ? Math.round((paid / total) * 100) : 0;
+            const pendPct = total > 0 ? 100 - paidPct : 0;
+            const barPaid = document.getElementById('rep-bar-paid');
+            const barPend = document.getElementById('rep-bar-pending');
+            if (barPaid) barPaid.style.width = paidPct + '%';
+            if (barPend) barPend.style.width = pendPct + '%';
+
+            // Top clientes
+            const clientTotals = {};
+            inRange.forEach(inv => {
+                clientTotals[inv.client] = (clientTotals[inv.client] || 0) + Number(inv.total);
+            });
+            const sortedClients = Object.entries(clientTotals).sort((a, b) => b[1] - a[1]);
+
+            const topContainer = document.getElementById('rep-top-clients');
+            if (topContainer) {
+                topContainer.innerHTML = sortedClients.length === 0
+                    ? '<p class="text-xs text-stone-500">Sin registros en este rango de fechas.</p>'
+                    : sortedClients.map(([name, amount], idx) => `
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-cream-100 border border-cream-300">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-full bg-navy-800 text-white text-xs font-bold flex items-center justify-center">${idx + 1}</span>
+                                <span class="text-xs font-bold text-stone-800">${name}</span>
+                            </div>
+                            <span class="text-xs font-bold text-navy-900">${formatCurrency(amount)}</span>
+                        </div>
+                    `).join('');
+            }
+
+            // Resumen de inventario
+            const invValue = inventory.reduce((acc, item) => acc + (item.stock * item.price), 0);
+            const invSummaryEl = document.getElementById('rep-inventory-summary');
+            if (invSummaryEl) {
+                invSummaryEl.innerHTML = `
+                    <div class="flex justify-between p-2.5 rounded-lg bg-cream-100 border border-cream-300">
+                        <span class="text-stone-600">Valor total del stock en almacén:</span>
+                        <span class="font-bold text-navy-900">${formatCurrency(invValue)}</span>
+                    </div>
+                    <div class="flex justify-between p-2.5 rounded-lg bg-cream-100 border border-cream-300">
+                        <span class="text-stone-600">Lotes registrados (Telas, Accesorios, Prendas):</span>
+                        <span class="font-bold text-stone-900">${inventory.length} lotes</span>
+                    </div>
+                    <div class="flex justify-between p-2.5 rounded-lg bg-cream-100 border border-cream-300">
+                        <span class="text-stone-600">Clientes con ficha de medidas:</span>
+                        <span class="font-bold text-stone-900">${clients.length} clientes</span>
+                    </div>
+                `;
+            }
+        }
+
+        function resetReportDates() {
+            document.getElementById('rep-date-from').value = '2023-01-01';
+            document.getElementById('rep-date-to').value = '2026-12-31';
+            renderReports();
+            showToast('Rango de fechas del reporte restablecido');
+        }
+
+        function exportReportSummary() {
+            const paid = invoices.filter(i => i.status === 'Pagado').reduce((a, b) => a + Number(b.total), 0);
+            const pending = invoices.filter(i => i.status === 'Pendiente').reduce((a, b) => a + Number(b.total), 0);
+            const summaryText = `REPORTE ${appConfig.brandName.toUpperCase()} - Facturas: ${invoices.length} | Pagado: ${formatCurrency(paid)} | Pendiente: ${formatCurrency(pending)}`;
+
+            const tempInput = document.createElement('textarea');
+            tempInput.value = summaryText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast('Resumen financiero copiado al portapapeles');
+        }
+
+        // ==========================================
+        // SECCIÓN 6: AJUSTES DEL SISTEMA
+        // ==========================================
+        function saveSettings(e) {
+            e.preventDefault();
+            appConfig.brandName = document.getElementById('set-brand-name').value.trim() || 'Sastrería Elegance';
+            appConfig.currency = document.getElementById('set-currency').value;
+            appConfig.taxId = document.getElementById('set-tax-id').value.trim();
+            appConfig.monthlyGoal = parseFloat(document.getElementById('set-monthly-goal').value) || 3500;
+            appConfig.address = document.getElementById('set-address').value.trim();
+
+            document.querySelectorAll('.brand-name-display').forEach(el => {
+                el.textContent = appConfig.brandName;
+            });
+
+            refreshAllViews();
+            showToast(`Ajustes guardados. Moneda activa: ${appConfig.currency}`);
+        }
+
+        function restoreDemoData() {
+            invoices = JSON.parse(JSON.stringify(initialInvoices));
+            clients = JSON.parse(JSON.stringify(initialClients));
+            inventory = JSON.parse(JSON.stringify(initialInventory));
+            appConfig.currency = 'Q';
+            document.getElementById('set-currency').value = 'Q';
+            refreshAllViews();
+            showToast('Datos originales de demostración restaurados');
+        }
+
+        // Mostrar notificación flotante
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 2800);
+        }
+
+        // Inicializar aplicación al cargar la ventana
+        window.onload = function () {
+            refreshAllViews();
+            startSplashAnimation();
+        };
+    </script>
+</body>
+</html>
