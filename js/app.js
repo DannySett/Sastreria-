@@ -129,9 +129,62 @@ const initialInventory = [
     }
 ];
 
-let invoices = JSON.parse(JSON.stringify(initialInvoices));
-let clients = JSON.parse(JSON.stringify(initialClients));
-let inventory = JSON.parse(JSON.stringify(initialInventory));
+// Los datos se cargan desde la capa de datos (js/db.js) al iniciar la app
+let invoices = [];
+let clients = [];
+let inventory = [];
+
+const defaultConfig = { ...appConfig };
+const clone = obj => JSON.parse(JSON.stringify(obj));
+const snapshot = () => ({ invoices, clients, inventory, config: appConfig });
+
+// Ejecuta un guardado sin bloquear la interfaz; si falla, avisa al usuario
+function persist(promise) {
+    Promise.resolve(promise).catch(err => {
+        console.error('Error al guardar:', err);
+        showToast('No se pudo guardar: ' + (err && err.message ? err.message : err));
+    });
+}
+
+// Refleja appConfig en el formulario de Ajustes y en los nombres de marca
+function applyConfigToUI() {
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    set('set-brand-name', appConfig.brandName);
+    set('set-currency', appConfig.currency);
+    set('set-tax-id', appConfig.taxId);
+    set('set-monthly-goal', appConfig.monthlyGoal);
+    set('set-address', appConfig.address);
+    document.querySelectorAll('.brand-name-display').forEach(el => { el.textContent = appConfig.brandName; });
+}
+
+// Carga los datos guardados (localStorage o Supabase)
+async function loadDataFromDB() {
+    const data = await DB.loadAll();
+    if (data) {
+        invoices = data.invoices || [];
+        clients = data.clients || [];
+        inventory = data.inventory || [];
+        if (data.config) appConfig = { ...appConfig, ...data.config };
+    } else {
+        // Primera vez en modo local: arranca con los datos de demostración y los guarda
+        invoices = clone(initialInvoices);
+        clients = clone(initialClients);
+        inventory = clone(initialInventory);
+        await DB.replaceAll(snapshot());
+    }
+    applyConfigToUI();
+    refreshAllViews();
+}
+
+// En modo Supabase se ocultan los datos de ejemplo del login y el acceso rápido (no hay sesión real)
+function prepareRemoteLoginUI() {
+    const u = document.getElementById('login-user');
+    const pw = document.getElementById('login-pass');
+    if (u) u.value = '';
+    if (pw) pw.value = '';
+    const quick = document.getElementById('quick-access');
+    if (quick) quick.classList.add('hidden');
+}
 let splashTimers = [];
 
 // Convierte fecha YYYY-MM-DD a formato legible "25 Oct 2023" igual a la foto
@@ -194,6 +247,11 @@ function replaySplash() {
 
 function goToLogin() {
     clearSplashTimers();
+    // Con Supabase: si ya hay sesión activa, entra directo a la app
+    if (DB.isRemote && DB.isLoggedIn()) {
+        enterApp('facturas');
+        return;
+    }
     const splash = document.getElementById('splash-screen');
     const login = document.getElementById('login-screen');
     const app = document.getElementById('app-container');
@@ -207,10 +265,31 @@ function goToLogin() {
     }, 350);
 }
 
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
+    if (DB.isRemote) {
+        const email = document.getElementById('login-user').value.trim();
+        const pass = document.getElementById('login-pass').value;
+        try {
+            await DB.signIn(email, pass);
+            await loadDataFromDB();
+        } catch (err) {
+            showToast('No se pudo iniciar sesión: ' + (err && err.message ? err.message : err));
+            return;
+        }
+    }
     enterApp('facturas');
     showToast('Sesión iniciada correctamente en ' + appConfig.brandName);
+}
+
+async function logout() {
+    try { await DB.signOut(); } catch (err) { console.error(err); }
+    if (DB.isRemote) {
+        // Al cerrar sesión se limpian los datos de la memoria
+        invoices = []; clients = []; inventory = [];
+        refreshAllViews();
+    }
+    goToLogin();
 }
 
 function enterApp(initialView = 'facturas') {
@@ -365,6 +444,7 @@ function updateInvoiceDateInline(uid, newIsoDate) {
     const inv = invoices.find(i => i.uid === uid);
     if (inv) {
         inv.date = newIsoDate;
+        persist(DB.upsertInvoice(inv));
         refreshAllViews();
         showToast(`Fecha de factura ${inv.id} actualizada a ${formatReadableDate(newIsoDate)}`);
     }
@@ -374,6 +454,7 @@ function toggleInvoiceStatus(uid) {
     const inv = invoices.find(i => i.uid === uid);
     if (inv) {
         inv.status = inv.status === 'Pagado' ? 'Pendiente' : 'Pagado';
+        persist(DB.upsertInvoice(inv));
         refreshAllViews();
         showToast(`Estatus de factura ${inv.id} cambiado a ${inv.status}`);
     }
@@ -519,6 +600,7 @@ function saveInvoice(e) {
         showToast('Nueva factura creada con fecha ' + formatReadableDate(newItem.date));
     }
 
+    persist(DB.upsertInvoice(newItem));
     closeInvoiceModal();
     refreshAllViews();
 }
@@ -548,6 +630,7 @@ function closeDetailsModal() {
 
 function deleteInvoice(uid) {
     invoices = invoices.filter(i => i.uid !== uid);
+    persist(DB.removeInvoice(uid));
     refreshAllViews();
     showToast('Factura eliminada del registro');
 }
@@ -594,6 +677,7 @@ function updateOrderStage(uid, newStage) {
     const inv = invoices.find(i => i.uid === uid);
     if (inv) {
         inv.stage = newStage;
+        persist(DB.upsertInvoice(inv));
         showToast(`Orden ${inv.id} actualizada a etapa: ${newStage}`);
     }
 }
@@ -654,6 +738,7 @@ function updateClientDateInline(id, newDate) {
     const c = clients.find(x => x.id === id);
     if (c && newDate) {
         c.date = newDate;
+        persist(DB.upsertClient(c));
         showToast(`Fecha de registro de ${c.name} actualizada a ${formatReadableDate(newDate)}`);
     }
 }
@@ -720,6 +805,7 @@ function saveClient(e) {
         showToast('Nuevo cliente registrado en el directorio');
     }
 
+    persist(DB.upsertClient(data));
     closeClientModal();
     refreshAllViews();
 }
@@ -742,6 +828,7 @@ function viewClientFicha(id) {
 
 function deleteClient(id) {
     clients = clients.filter(x => x.id !== id);
+    persist(DB.removeClient(id));
     refreshAllViews();
     showToast('Cliente eliminado del directorio');
 }
@@ -816,6 +903,7 @@ function adjustStock(id, delta) {
     const item = inventory.find(x => x.id === id);
     if (item) {
         item.stock = Math.max(0, item.stock + delta);
+        persist(DB.upsertItem(item));
         refreshAllViews();
         showToast(`Stock de ${item.code} actualizado a ${item.stock} ${item.unit}`);
     }
@@ -825,6 +913,7 @@ function updateInventoryDateInline(id, newDate) {
     const item = inventory.find(x => x.id === id);
     if (item && newDate) {
         item.date = newDate;
+        persist(DB.upsertItem(item));
         showToast(`Fecha de ingreso de ${item.code} actualizada a ${formatReadableDate(newDate)}`);
     }
 }
@@ -891,12 +980,14 @@ function saveInventoryItem(e) {
         showToast('Nuevo artículo agregado al inventario');
     }
 
+    persist(DB.upsertItem(data));
     closeInventoryModal();
     refreshAllViews();
 }
 
 function deleteInventoryItem(id) {
     inventory = inventory.filter(x => x.id !== id);
+    persist(DB.removeItem(id));
     refreshAllViews();
     showToast('Artículo eliminado del inventario');
 }
@@ -1011,16 +1102,21 @@ function saveSettings(e) {
         el.textContent = appConfig.brandName;
     });
 
+    persist(DB.saveConfig(appConfig));
     refreshAllViews();
     showToast(`Ajustes guardados. Moneda activa: ${appConfig.currency}`);
 }
 
 function restoreDemoData() {
-    invoices = JSON.parse(JSON.stringify(initialInvoices));
-    clients = JSON.parse(JSON.stringify(initialClients));
-    inventory = JSON.parse(JSON.stringify(initialInventory));
-    appConfig.currency = 'Q';
-    document.getElementById('set-currency').value = 'Q';
+    if (DB.isRemote && !confirm('Esto BORRARÁ los datos actuales de la base de datos y cargará los de demostración. ¿Continuar?')) {
+        return;
+    }
+    invoices = clone(initialInvoices);
+    clients = clone(initialClients);
+    inventory = clone(initialInventory);
+    appConfig = { ...appConfig, currency: defaultConfig.currency };
+    applyConfigToUI();
+    persist(DB.replaceAll(snapshot()));
     refreshAllViews();
     showToast('Datos originales de demostración restaurados');
 }
@@ -1038,7 +1134,19 @@ function showToast(message) {
 }
 
 // Inicializar aplicación al cargar la ventana
-window.onload = function () {
-    refreshAllViews();
+window.onload = async function () {
     startSplashAnimation();
+    try {
+        await DB.init();
+        if (DB.isRemote) {
+            prepareRemoteLoginUI();
+            if (DB.isLoggedIn()) await loadDataFromDB();   // sesión recuperada
+        } else {
+            await loadDataFromDB();
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('Error con la base de datos: ' + (err && err.message ? err.message : err));
+    }
+    refreshAllViews();
 };

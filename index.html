@@ -147,7 +147,7 @@
                 </form>
 
                 <!-- Botón de acceso directo a vistas -->
-                <div class="w-full mt-5 pt-4 border-t border-cream-200 flex items-center justify-between text-xs text-stone-500">
+                <div id="quick-access" class="w-full mt-5 pt-4 border-t border-cream-200 flex items-center justify-between text-xs text-stone-500">
                     <span>Acceso rápido de prueba:</span>
                     <div class="flex gap-2">
                         <button onclick="enterApp('dashboard')" class="px-2.5 py-1 bg-cream-200 hover:bg-gold-400/40 text-stone-700 rounded font-medium transition">
@@ -247,7 +247,7 @@
                     <i class="fa-solid fa-wand-magic-sparkles w-5 text-center"></i>
                     <span>Animación Pre-Login</span>
                 </button>
-                <button onclick="goToLogin()" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium text-stone-600 hover:text-brick-600 hover:bg-red-50/60 transition">
+                <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-xs font-medium text-stone-600 hover:text-brick-600 hover:bg-red-50/60 transition">
                     <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
                     <span>Cerrar Sesión</span>
                 </button>
@@ -1079,8 +1079,12 @@
     </div>
 
     <!-- ==========================================
-         LÓGICA JAVASCRIPT DE LA APLICACIÓN COMPLETA (js/app.js)
+         SCRIPTS: librería Supabase -> config -> capa de datos -> lógica de la app
          ========================================== -->
+    <!-- Librería de Supabase (solo se usa si MODE = 'supabase' en js/config.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
