@@ -1,0 +1,112 @@
+body {
+    background-color: #f8f4ea;
+    color: #2b2927;
+    overflow-x: hidden;
+}
+
+/* Animación de la aguja y el hilo girando */
+@keyframes spinOrbit {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes threadDraw {
+    0% {
+        stroke-dashoffset: 360;
+    }
+    50% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -360;
+    }
+}
+
+@keyframes needleFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-6px) rotate(3deg);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 6px rgba(203, 178, 134, 0.4));
+    }
+    50% {
+        filter: drop-shadow(0 0 16px rgba(203, 178, 134, 0.85));
+    }
+}
+
+.animate-orbit {
+    animation: spinOrbit 4.5s linear infinite;
+    transform-origin: center;
+}
+
+.animate-orbit-reverse {
+    animation: spinOrbit 7s linear infinite reverse;
+    transform-origin: center;
+}
+
+.animate-thread {
+    stroke-dasharray: 360;
+    animation: threadDraw 3.5s ease-in-out infinite;
+}
+
+.animate-needle {
+    animation: needleFloat 2.6s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.animate-fade-up {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stagger-1 { animation-delay: 0.08s; }
+.stagger-2 { animation-delay: 0.16s; }
+.stagger-3 { animation-delay: 0.24s; }
+.stagger-4 { animation-delay: 0.32s; }
+
+/* Scrollbar elegante */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f2ece0;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbb286;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #b59663;
+}
+
+/* Efectos suaves para botones */
+.btn-action {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-action:hover {
+    transform: translateY(-1px) scale(1.02);
+}
+.btn-action:active {
+    transform: translateY(0) scale(0.98);
+}
