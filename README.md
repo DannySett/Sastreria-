@@ -1,107 +1,154 @@
-﻿# Sastreria-
 # Sastrería Elegance
 ### Sistema web de gestión administrativa para una sastrería
 
 ## 1. Descripción del proyecto
 
-Sastrería Elegance es una aplicación web diseñada para apoyar la gestión administrativa de una sastrería mediante una interfaz que centraliza diferentes actividades relacionadas con los clientes, servicios, facturación, inventario y seguimiento del negocio.
+Sastrería Elegance es una aplicación web orientada a facilitar la gestión administrativa de una sastrería mediante la centralización de diferentes actividades relacionadas con clientes, medidas, facturación, servicios e inventario.
 
-El proyecto busca facilitar la organización de la información y mejorar los procesos administrativos mediante herramientas digitales.
+El proyecto busca ofrecer una herramienta digital que permita organizar la información del negocio, simplificar las tareas administrativas y mejorar el seguimiento de sus operaciones.
 
-## 2. Objetivos
+La aplicación se desarrolla como parte de un proyecto académico de Ingeniería de Sistemas.
 
-- Centralizar la información administrativa de la sastrería.
-- Facilitar la gestión de clientes y sus medidas.
-- Organizar la información de facturación y servicios.
-- Proporcionar una interfaz intuitiva para el administrador.
-- Establecer una base para futuras funcionalidades de persistencia y autenticación.
+## 2. Objetivo general
+
+Desarrollar una aplicación web para apoyar la gestión administrativa de una sastrería, integrando módulos que permitan organizar la información de clientes, servicios, facturación e inventario mediante una interfaz intuitiva y de fácil utilización.
 
 ## 3. Tecnologías utilizadas
 
-- HTML5: estructura de la aplicación.
-- CSS3: diseño y presentación visual.
-- JavaScript: lógica e interactividad.
-- Tailwind CSS: utilidades de estilos.
-- Font Awesome: iconografía.
-- Google Fonts: tipografías.
-- GitHub: control de versiones y almacenamiento del código.
-- GitHub Pages: publicación de la aplicación.
-- Supabase: tecnología considerada para la futura integración de base de datos y autenticación. Actualmente no se encuentra conectada.
+| Tecnología | Utilización |
+|---|---|
+| HTML5 | Estructura de la aplicación web. |
+| CSS3 | Diseño y presentación de interfaces. |
+| JavaScript | Lógica e interactividad de los módulos. |
+| Tailwind CSS | Apoyo en la construcción de estilos. |
+| Font Awesome | Iconografía de la aplicación. |
+| Google Fonts | Tipografías utilizadas en la interfaz. |
+| GitHub | Control de versiones y almacenamiento del código fuente. |
+| GitHub Pages | Publicación de la aplicación web. |
+| Supabase | Plataforma seleccionada para una futura integración de base de datos y autenticación. |
+
+**Nota:** Supabase se encuentra contemplado en la arquitectura del proyecto, pero su conexión funcional todavía está pendiente.
 
 ## 4. Estructura del proyecto
 
+La organización principal del repositorio es la siguiente:
+
 ```text
 Sastreria-/
+│
 ├── css/
 │   └── styles.css
+│
 ├── js/
-│   └── [archivos JavaScript]
+│   └── Archivos JavaScript
+│
 ├── supabase/
-│   └── [archivos de configuración]
+│   └── Archivos de configuración
+│
 ├── index.html
+│
 └── README.md
 ```
 
-## 5. Funcionalidades del sistema
+## 5. Módulos de la aplicación
 
-La aplicación contempla módulos administrativos relacionados con:
+La aplicación contempla los siguientes módulos administrativos:
 
-- Panel principal.
-- Gestión de clientes y medidas.
-- Facturación.
-- Gestión de servicios.
-- Inventario.
-- Reportes financieros.
-- Configuración del sistema.
+- **Panel principal:** presenta una vista general de la información del negocio.
+- **Clientes y medidas:** permite gestionar información relacionada con los clientes y sus medidas.
+- **Facturación:** contempla operaciones de creación, consulta y edición de facturas.
+- **Servicios:** permite organizar los servicios ofrecidos por la sastrería.
+- **Inventario:** contempla la administración de los recursos y materiales del negocio.
+- **Reportes financieros:** presenta información relacionada con el seguimiento financiero.
+- **Configuración:** reúne opciones de administración del sistema.
 
-La disponibilidad y el alcance de cada operación deben verificarse en la versión implementada.
+Los formularios y módulos cuentan con lógica de interacción desarrollada en JavaScript. Su funcionamiento individual debe verificarse mediante las pruebas correspondientes.
 
-## 6. Requisitos para ejecutar el proyecto
+## 6. Requisitos para la ejecución
 
-- Navegador web actualizado.
-- Conexión a Internet para cargar los recursos externos utilizados por la aplicación.
-- Editor de código, como Visual Studio Code, para realizar modificaciones.
+Para ejecutar el proyecto se requiere:
 
-## 7. Ejecución local
+- Un navegador web actualizado.
+- Conexión a Internet para cargar los recursos externos utilizados por la interfaz.
+- Visual Studio Code u otro editor de código, si se desea modificar el proyecto.
+- Git, opcionalmente, para clonar el repositorio.
 
-1. Descargar o clonar el repositorio.
-2. Abrir la carpeta del proyecto.
-3. Ejecutar `index.html` mediante un servidor local, por ejemplo, la extensión Live Server de Visual Studio Code.
-4. Abrir la dirección local proporcionada por el servidor en el navegador.
+## 7. Instalación y ejecución local
 
-## 8. Despliegue
+Para obtener una copia del proyecto se deben seguir los siguientes pasos:
 
-El proyecto se encuentra publicado mediante GitHub Pages.
+**Paso 1. Clonar el repositorio**
 
-Repositorio:
+Abrir una terminal y ejecutar:
+
+```bash
+git clone https://github.com/DannySett/Sastreria-.git
+```
+
+**Paso 2. Ingresar a la carpeta**
+
+```bash
+cd Sastreria-
+```
+
+**Paso 3. Abrir el proyecto**
+
+Abrir la carpeta del proyecto en Visual Studio Code.
+
+**Paso 4. Ejecutar la aplicación**
+
+Utilizar una extensión como Live Server para ejecutar el archivo `index.html` desde un servidor local.
+
+También es posible abrir el archivo HTML directamente en un navegador, aunque se recomienda utilizar un servidor local para evitar posibles restricciones de ejecución.
+
+## 8. Despliegue de la aplicación
+
+El proyecto se encuentra publicado mediante GitHub Pages, lo que permite acceder a la interfaz web desde un navegador sin necesidad de instalar la aplicación.
+
+**Repositorio:**
+
 https://github.com/DannySett/Sastreria-
 
-Aplicación:
+**Aplicación publicada:**
+
 https://dannysett.github.io/Sastreria-/
 
-## 9. Estado actual y limitaciones
+## 9. Estado actual del desarrollo
 
-La aplicación cuenta con una interfaz web publicada y un módulo administrativo orientado a la gestión de la sastrería.
+La aplicación cuenta con una interfaz web publicada, diferentes módulos administrativos y formularios que ejecutan acciones mediante JavaScript.
 
-Actualmente se identifican las siguientes limitaciones:
+Actualmente, el proyecto presenta el siguiente estado:
 
-- La integración con Supabase todavía no está configurada.
-- La autenticación de usuarios está pendiente.
-- No existe diferenciación funcional entre roles.
-- La persistencia centralizada de información requiere implementar y conectar una base de datos.
+- La interfaz administrativa se encuentra implementada.
+- Los formularios cuentan con lógica de interacción.
+- Se dispone de archivos de configuración relacionados con Supabase.
+- La integración funcional con Supabase está pendiente.
+- La persistencia centralizada de la información no ha sido verificada.
+- La pantalla de inicio de sesión está implementada visualmente, pero todavía no realiza una autenticación efectiva.
+- El acceso no está restringido mediante una validación funcional de credenciales.
+- El sistema contempla inicialmente el rol de administrador, pero el control de permisos todavía requiere implementación.
 
 ## 10. Equipo de desarrollo
 
-Proyecto desarrollado por estudiantes de Ingeniería de Sistemas:
+El proyecto es desarrollado por dos estudiantes del programa de Ingeniería de Sistemas:
 
-- Danny: desarrollo e integración técnica.
-- Alejandro: desarrollo de interfaces y experiencia de usuario.
+- **Danny Jimena Triana:** desarrollo e integración técnica, con énfasis en Backend, gestión de bases de datos y conexión de servicios.
+- **Alejandro Hurtado Vargas:** desarrollo de interfaces, estructura visual y experiencia de usuario.
+
+Ambos integrantes participan en la planificación, revisión y seguimiento de las actividades del proyecto.
 
 ## 11. Mejoras futuras
 
-- Implementación de autenticación.
-- Integración con Supabase.
-- Persistencia de clientes, facturas y servicios.
-- Control de acceso mediante roles.
-- Fortalecimiento de la seguridad.
-- Ampliación de las pruebas funcionales y de calidad.
+Como parte de la continuidad del proyecto se contemplan las siguientes mejoras:
+
+- Integración funcional con Supabase.
+- Implementación de autenticación de usuarios.
+- Desarrollo de un sistema de permisos y diferenciación de roles.
+- Persistencia centralizada de clientes, servicios y facturas.
+- Fortalecimiento de los mecanismos de seguridad.
+- Ejecución de pruebas funcionales, de integración y usabilidad.
+- Optimización de los módulos administrativos.
+
+## 12. Licencia y uso académico
+
+Este proyecto se desarrolla con fines académicos como parte de las actividades del programa de Ingeniería de Sistemas.
