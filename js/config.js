@@ -8,7 +8,7 @@
    (Project Settings -> API). NUNCA pegues aquí la clave "service_role".
    ========================================================= */
 const DB_CONFIG = {
-    MODE: 'local',
-    SUPABASE_URL: '',        // ej: https://abcdefghij.supabase.co
-    SUPABASE_ANON_KEY: ''    // clave pública (anon / publishable)
+    MODE: 'Supabase',
+    SUPABASE_URL: 'https://nluixkggbtkcsvzggdur.supabase.co',        // ej: https://abcdefghij.supabase.co
+    SUPABASE_ANON_KEY: 'sb_publishable_v2-gplZ84udmsnh4NRKvAw_U5-fevKF'    // clave pública (anon / publishable)
 };
